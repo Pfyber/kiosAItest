@@ -96,7 +96,8 @@ html,body{height:100%;background:#000;overflow:hidden}
 
 .brand{display:flex;align-items:center;gap:26px}
 .logo{flex:none;height:176px;color:#fff;transition:color 1s ease}
-.logo svg{display:block;height:100%;width:auto;max-width:200px}
+.logo{position:relative}
+.logo>svg{display:block;height:100%;width:auto;max-width:200px}
 @media (prefers-reduced-motion:reduce){.logo{transition:none}}
 .feat>*{flex-shrink:0}
 /* a bit more air between news headline and description */
@@ -108,6 +109,11 @@ html,body{height:100%;background:#000;overflow:hidden}
 .school{opacity:1;align-self:start;cursor:pointer}
 .theme-toast{display:block;height:26px;margin-top:4px;font-family:var(--sans);font-size:20px;font-weight:600;color:var(--signal);opacity:0;transition:opacity .3s}
 .theme-toast.on{opacity:1}
+.logo-hat{display:none;position:absolute;left:50%;top:-34px;width:96px;margin-left:-36px;transform-origin:30% 85%;animation:hat-sway 3.2s ease-in-out infinite alternate}
+.logo-hat svg{display:block;width:100%;height:auto;filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))}
+.t-hat .logo-hat{display:block}   /* winter + christmas: Santa hat on the logo */
+@keyframes hat-sway{from{transform:rotate(-16deg)}to{transform:rotate(-8deg)}}
+@media (prefers-reduced-motion:reduce){.logo-hat{animation:none;transform:rotate(-12deg)}}
 /* seasonal themes: one transparent layer above everything, sprites move with Web Animations */
 #fx{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:20}
 .fx-p{position:absolute;left:0;top:0}
@@ -122,7 +128,7 @@ html,body{height:100%;background:#000;overflow:hidden}
 .fx-lights{position:absolute;left:0;top:0;width:1080px;height:430px}
 .fx-bulb{animation:fx-twinkle 1.8s ease-in-out infinite alternate}
 @keyframes fx-twinkle{from{opacity:.35}}
-.t-april .logo svg{transform:rotate(180deg);transition:transform 1.5s ease}
+.t-april .logo>svg{transform:rotate(180deg);transition:transform 1.5s ease}
 @media (prefers-reduced-motion:reduce){.fx-bulb,.fx-banner{animation:none}}
 /* weather: icon right next to the temperature, description on its own line below;
    everything shares the right edge with the school name */
@@ -170,7 +176,7 @@ html,body{height:100%;background:#000;overflow:hidden}
 <div id="stage">
   <header class="top">
     <div class="brand">
-      <div class="logo" id="logo"></div>
+      <div class="logo" id="logo"><div class="logo-hat" aria-hidden="true"><svg viewBox="0 0 100 80"><path d="M14 60C20 32 46 10 74 9c12 0 20 8 19 19-11-5-25 2-31 32z" fill="#D8322B"/><path d="M28 34c10-12 24-20 40-22" stroke="#fff" stroke-opacity=".25" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="6" y="54" width="62" height="18" rx="9" fill="#fff" stroke="#D8DEE8" stroke-width="1.5"/><circle cx="93" cy="30" r="9" fill="#fff" stroke="#D8DEE8" stroke-width="1.5"/></svg></div></div>
       <div>
         <div class="clock" id="clock">00:00</div>
         <div class="date" id="date"></div>
@@ -371,7 +377,7 @@ async function loadLogo(){
    if(!el.closest('defs,clipPath,mask')&&!el.getAttribute('fill')&&!(el.style&&el.style.getPropertyValue('fill')))el.setAttribute('fill','currentColor')});
   svg.removeAttribute('width');svg.removeAttribute('height');
   svg.setAttribute('aria-hidden','true');
-  logoEl.replaceChildren(document.importNode(svg,true));
+  logoEl.querySelector(':scope>svg')?.remove();logoEl.prepend(document.importNode(svg,true)); // keep .logo-hat
   // Crop the viewBox to the drawing (Inkscape files often use a whole A4 page).
   // Union of the on-screen boxes of all visible shapes, mapped back into SVG units
   // (getBBox() on the group is unreliable with Inkscape clip paths).
@@ -818,9 +824,9 @@ const SPRITES={
 };
 const PARTY=['#FF5C8A','#F5B700','#2B6CD9','#7ED3A4','#B67BFF','#FF8A1F'];
 const THEMES={
- winter:{label:'Zima',vars:{'--signal':'#E0463C'},logo:['#FFFFFF','#E0463C','#3FA36B','#F5B700'],lights:true,
+ winter:{label:'Zima',cls:'t-hat',vars:{'--signal':'#E0463C'},logo:['#FFFFFF','#E0463C','#3FA36B','#F5B700'],lights:true,
   sprites:[{s:'snow',move:'fall',max:22,every:[.4,1.2],size:[16,34],dur:[12,20],burst:10}]},
- christmas:{label:'Božič in novo leto',vars:{'--signal':'#E0463C'},logo:['#FFFFFF','#E0463C','#3FA36B','#F5B700'],lights:true,
+ christmas:{label:'Božič in novo leto',cls:'t-hat',vars:{'--signal':'#E0463C'},logo:['#FFFFFF','#E0463C','#3FA36B','#F5B700'],lights:true,
   banner:'Vesele praznike in srečno novo leto!',
   sprites:[{s:'snow',move:'fall',max:26,every:[.3,1],size:[16,36],dur:[12,20],burst:12},{s:'star',move:'fall',max:3,every:[6,12],size:[20,30],dur:[16,22],spin:true}]},
  valentine:{label:'Valentinovo',vars:{'--signal':'#FF5C8A'},logo:['#FFFFFF','#FF5C8A','#FF8FB1','#FFC2D4'],

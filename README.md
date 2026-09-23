@@ -199,8 +199,8 @@ player. On screens set to reduced motion, the colours change but nothing moves.
 
 | Theme | Default dates | What happens |
 |---|---|---|
-| `winter` Zima | 12-01 → 12-19 | red accents, snow falls, twinkling lights under the header |
-| `christmas` Božič in novo leto | 12-20 → 01-02 | snow, lights, gold stars, greeting banner |
+| `winter` Zima | 12-01 → 12-19 | red accents, Santa hat on the logo, snow falls, twinkling lights under the header |
+| `christmas` Božič in novo leto | 12-20 → 01-02 | Santa hat on the logo, snow, lights, gold stars, greeting banner |
 | `pust` Pust | pust-4 → pust | purple accents, confetti, carnival masks and balloons, banner |
 | `presern` Prešernov dan | 02-06 → 02-08 | gold stars, verse banner from Zdravljica |
 | `valentine` Valentinovo | 02-13 → 02-14 | pink accents, hearts float up, banner |
