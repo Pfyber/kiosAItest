@@ -105,7 +105,17 @@ html,body{height:100%;background:#000;overflow:hidden}
 /* small seconds next to the clock, current lesson line under the date */
 .clock{font-variant-numeric:tabular-nums}
 /* school name + today's name days, top right above the weather (uses the template's .school slot) */
-.school{opacity:1;align-self:start}
+.school{opacity:1;align-self:start;cursor:pointer}
+.theme-toast{display:block;height:26px;margin-top:4px;font-family:var(--sans);font-size:20px;font-weight:600;color:var(--signal);opacity:0;transition:opacity .3s}
+.theme-toast.on{opacity:1}
+/* seasonal themes: one transparent layer above everything, sprites move with Web Animations */
+#fx{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+.fx-p{position:absolute;left:0;top:0}
+.fx-sprite svg{display:block;width:100%;height:auto}
+.fx-bat .w{transform-box:view-box;transform-origin:32px 14px;animation:fx-flap .22s ease-in-out infinite alternate}
+@keyframes fx-flap{to{transform:scaleY(.35)}}
+.fx-ghost svg{filter:drop-shadow(0 3px 5px rgba(16,38,74,.25))}
+.fx-thread{position:absolute;left:18px;top:0;width:2px;height:0;background:#2B1B3F;opacity:.55}
 /* weather: icon right next to the temperature, description on its own line below;
    everything shares the right edge with the school name */
 .now{justify-self:end;display:grid;grid-template-columns:auto auto;justify-content:end;align-items:center;column-gap:12px}
@@ -159,7 +169,7 @@ html,body{height:100%;background:#000;overflow:hidden}
         <div class="lesson" id="lesson" hidden><div class="lesson-t"><span id="lessonText"></span><em id="lessonNext"></em></div><i><u id="lessonBreak"></u><s id="lessonBar"></s></i></div>
       </div>
     </div>
-    <div class="school"><b id="schoolName"></b></div>
+    <div class="school"><b id="schoolName"></b><span class="theme-toast" id="themeToast"></span></div>
     <div class="now" id="now"></div>
     <div class="fc" id="fc"></div>
   </header>
@@ -179,6 +189,7 @@ html,body{height:100%;background:#000;overflow:hidden}
     <div class="godbox" id="godbox" hidden><b id="godTitle">Danes goduje</b><p id="god"></p></div>
     <div class="cd" id="cd" hidden><span id="cdLabel"></span><b id="cdTime"></b></div>
   </footer>
+  <div id="fx" aria-hidden="true"></div>
 </div>
 
 <script src="config.js"></script>
@@ -368,8 +379,8 @@ async function loadLogo(){
   }catch(e){}
  }catch(e){log('logo',e)}
 }
-let li=0;
-function logoColour(){const c=CONFIG.logoColors;if(c&&c.length){logoEl.style.color=c[li%c.length];li++}}
+let li=0,themeLogo=null; // themeLogo: colours of the active seasonal theme (see below)
+function logoColour(){const c=themeLogo||CONFIG.logoColors;if(c&&c.length){logoEl.style.color=c[li%c.length];li++}}
 logoColour();loadLogo();setInterval(logoColour,60000);
 
 /* ---------- weather (Open-Meteo, no key, CORS ok) ---------- */
@@ -769,6 +780,93 @@ function showFact(){
  lastFact=bag.pop();factEl.textContent=lastFact;
 }
 loadFacts();setInterval(showFact,30000);
+
+/* ---------- seasonal themes ----------
+   One engine for all themes. A theme = colour accent + a few animated sprites on a
+   transparent layer (#fx) above the screen. Active automatically between the dates in
+   CONFIG.themes, or picked by hand: a tap on "ŠC KRANJ" cycles
+   samodejno → each theme → izklopljeno (back to samodejno after manualModeMinutes).
+   Add a theme: an entry in THEMES (label, vars, logo, sprites) + dates in config.js. */
+const SPRITES={
+ bat:`<svg viewBox="0 0 64 32"><g class="w" fill="#2B1B3F"><path d="M30 14C24 6 12 4 2 10c6 2 8 6 8 10 4-3 8-2 10 1 2-4 6-4 10-2z"/><path d="M34 14c6-8 18-10 28-4-6 2-8 6-8 10-4-3-8-2-10 1-2-4-6-4-10-2z"/></g><path fill="#2B1B3F" d="M29 10l1-5 2 4 2-4 1 5v8a3 3 0 0 1-6 0z"/><circle cx="30.6" cy="11.5" r=".9" fill="#FF8A1F"/><circle cx="33.4" cy="11.5" r=".9" fill="#FF8A1F"/></svg>`,
+ ghost:`<svg viewBox="0 0 40 48"><path d="M20 2C10 2 4 10 4 20v24l6-4 5 5 5-5 5 5 5-5 6 4V20C36 10 30 2 20 2z" fill="#fff" stroke="#B9C3D3" stroke-width="1.5"/><ellipse cx="15" cy="19" rx="2.6" ry="3.4" fill="#2B1B3F"/><ellipse cx="25" cy="19" rx="2.6" ry="3.4" fill="#2B1B3F"/><ellipse cx="20" cy="28" rx="2.4" ry="3" fill="#2B1B3F"/></svg>`,
+ spider:`<svg viewBox="0 0 40 36"><g stroke="#2B1B3F" stroke-width="2.2" stroke-linecap="round" fill="none"><path d="M14 16 4 8M14 19 2 18M14 22 4 30M16 24l-6 10M26 16l10-8M26 19l12-1M26 22l10 8M24 24l6 10"/></g><ellipse cx="20" cy="20" rx="8" ry="9" fill="#2B1B3F"/><circle cx="17" cy="17" r="1.6" fill="#FF8A1F"/><circle cx="23" cy="17" r="1.6" fill="#FF8A1F"/></svg>`
+};
+const THEMES={
+ halloween:{label:'Noč čarovnic',
+  vars:{'--signal':'#FF8A1F'},                        // yellow accents turn pumpkin orange
+  logo:['#FF8A1F','#B67BFF','#FFFFFF','#FFB347'],
+  sprites:[{s:'bat',max:4,every:[3,8]},{s:'ghost',max:2,every:[8,18]},{s:'spider',max:1,every:[15,35]}]}
+};
+const fxEl=document.getElementById('fx'),themeToast=document.getElementById('themeToast');
+const rnd=(a,b)=>a+Math.random()*(b-a);
+let curTheme=null,fxTimers=[],forcedTheme=null,forcedThemeTimer,toastTimer;
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Motion paths (Web Animations; only transform + opacity, so it stays smooth on a small player).
+function flyBat(el){ // across the screen in a gentle wave, wings flapping (CSS)
+ const w=rnd(54,84),ltr=Math.random()<.5,y=rnd(430,1450),x0=ltr?-w-20:1100,x1=ltr?1100:-w-20,amp=rnd(30,90);
+ el.style.width=w+'px';
+ const k=[0,.25,.5,.75,1].map((p,i)=>({transform:`translate(${x0+(x1-x0)*p}px,${y+(i%2?-amp:amp)*(i&&i<4?1:0)}px) rotate(${ltr?8:-8}deg)`}));
+ return el.animate(k,{duration:rnd(8000,13000),easing:'ease-in-out'});
+}
+function floatGhost(el){ // rises slowly along a side margin, fades in and out
+ const w=rnd(46,64),left=Math.random()<.5,x=left?rnd(4,40):rnd(1080-w-40,1080-w-4),y0=rnd(1300,1700),y1=y0-rnd(420,700);
+ el.style.width=w+'px';
+ return el.animate([{transform:`translate(${x}px,${y0}px)`,opacity:0},{transform:`translate(${x+14}px,${(y0*2+y1)/3}px)`,opacity:.85,offset:.25},
+  {transform:`translate(${x-14}px,${(y0+y1*2)/3}px)`,opacity:.85,offset:.75},{transform:`translate(${x}px,${y1}px)`,opacity:0}],{duration:rnd(12000,17000),easing:'ease-in-out'});
+}
+function dropSpider(el){ // lets itself down on a thread from the top of the news, then climbs back
+ const x=rnd(120,960),top=400,d=rnd(110,220);
+ el.style.width='38px';el.style.transform=`translate(${x}px,${top}px)`;
+ el.insertAdjacentHTML('afterbegin','<i class="fx-thread"></i>');
+ const th=el.firstChild,sp=el.lastElementChild,o={duration:9000,easing:'ease-in-out'};
+ const f=[{offset:0,v:0},{offset:.35,v:d},{offset:.65,v:d},{offset:1,v:0}];
+ th.animate(f.map(k=>({offset:k.offset,height:k.v+'px'})),o);
+ return sp.animate(f.map(k=>({offset:k.offset,transform:`translateY(${k.v}px)`})),o);
+}
+const MOVE={bat:flyBat,ghost:floatGhost,spider:dropSpider};
+
+function spawn(t,spec){
+ if(fxEl.querySelectorAll(`.fx-${spec.s}`).length>=spec.max)return;
+ const el=document.createElement('div');el.className=`fx-p fx-${spec.s}`;
+ el.innerHTML=`<div class="fx-sprite">${SPRITES[spec.s]}</div>`;fxEl.appendChild(el);
+ const a=MOVE[spec.s](el);a.onfinish=()=>el.remove();
+}
+function schedule(t,spec){ // keep spawning at random intervals while this theme is on
+ const id=setTimeout(()=>{if(curTheme!==t)return;spawn(t,spec);schedule(t,spec)},rnd(spec.every[0],spec.every[1])*1000);
+ fxTimers.push(id);
+}
+function applyTheme(name){
+ const t=THEMES[name]||null;if(t===curTheme)return;
+ fxTimers.forEach(clearTimeout);fxTimers=[];fxEl.replaceChildren();
+ if(curTheme)for(const k in curTheme.vars)stage.style.removeProperty(k);
+ curTheme=t;themeLogo=t?t.logo:null;
+ if(t){for(const k in t.vars)stage.style.setProperty(k,t.vars[k]);
+  if(!reduceMotion)t.sprites.forEach((spec,i)=>{setTimeout(()=>{if(curTheme===t)spawn(t,spec)},800+i*1500);schedule(t,spec)})}
+ li=0;logoColour();
+}
+// Which theme today? CONFIG.theme forces one ("off" = none); otherwise the first CONFIG.themes
+// entry whose MM-DD range contains today (a range may wrap over New Year, e.g. 12-20 → 01-06).
+function autoTheme(){
+ if(CONFIG.theme)return CONFIG.theme==='off'?null:CONFIG.theme;
+ const d=lj().ymd.slice(5);
+ const hit=(CONFIG.themes||[]).find(x=>x.from<=x.to?(d>=x.from&&d<=x.to):(d>=x.from||d<=x.to));
+ return hit?hit.name:null;
+}
+function updateTheme(){applyTheme(forcedTheme!==null?forcedTheme:autoTheme())}
+function toast(msg){themeToast.textContent=msg;themeToast.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>themeToast.classList.remove('on'),2500)}
+// Tap on "ŠC KRANJ": samodejno → theme 1 → theme 2 … → izklopljeno → samodejno
+document.querySelector('.school').addEventListener('click',()=>{
+ const order=[null,...Object.keys(THEMES),'off'];
+ forcedTheme=order[(order.indexOf(forcedTheme)+1)%order.length];
+ clearTimeout(forcedThemeTimer);
+ const mins=CONFIG.manualModeMinutes??10;
+ if(forcedTheme!==null&&mins>0)forcedThemeTimer=setTimeout(()=>{forcedTheme=null;updateTheme()},mins*60000);
+ updateTheme();
+ toast(forcedTheme===null?`Tema: samodejno${curTheme?' ('+curTheme.label+')':''}`:forcedTheme==='off'?'Tema: izklopljena':`Tema: ${THEMES[forcedTheme].label}`);
+});
+updateTheme();setInterval(updateTheme,60000);
 
 /* ---------- every minute: switch hour, new day, 04:00 reload ---------- */
 const bootDay=lj().ymd;let wasEventWindow=inEventWindow();

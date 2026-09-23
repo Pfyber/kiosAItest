@@ -44,6 +44,14 @@ window.CONFIG = {
   ],
   lessonsFrom: "6:00",  // show "1. ura čez …" from this time in the morning
 
+  /* Seasonal themes (colour accent + a few animated shapes). Shown automatically from
+     "from" to "to" (MM-DD, inclusive; a range may wrap over New Year). A tap on "ŠC KRANJ"
+     cycles through them by hand. Available: "halloween". */
+  themes: [
+    { name: "halloween", from: "10-19", to: "10-31" }   // school week before the autumn break
+  ],
+  theme: "",            // force a theme for testing ("halloween"), or "off"; "" = by date
+
   /* School holidays for the footer countdown – update every school year.
      start: first free day (countdown runs to 00:00 that day), or "YYYY-MM-DDTHH:MM"
             to count to e.g. the end of the last lesson before the break.

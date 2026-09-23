@@ -102,6 +102,8 @@ index.html?logoColors=FFFFFF,F5B700,6FA8FF
 | `schoolMax`, `afternoonMax` | Max. items per feed |
 | `generalMax` | Max. RTV items per pass through the news (each pass shows a new batch) |
 | `subsDate` | `YYYY-MM-DD`: show substitutions for that day instead of today (testing) |
+| `themes` | Seasonal themes by date (see below) |
+| `theme` | Force a theme (`halloween`) or `off`; empty = by date |
 
 ### Offline test of the substitutions
 
@@ -188,6 +190,29 @@ lessons: ["7:15-8:00", "8:05-8:50", …],
 
 1.–7. ura come from the school timetable. 8.–17. continue the same 45 + 5 minute
 pattern until 21:20. Check them against the real schedule.
+
+## Seasonal themes
+
+A theme adds a colour accent and a few small animated shapes on a transparent layer
+above the screen. Only transform and opacity animate, so it stays smooth on a small
+player. On screens set to reduced motion, the colours change but nothing moves.
+
+| Theme | Accent | Shapes |
+|---|---|---|
+| `halloween` (Noč čarovnic) | yellow accents turn orange, orange/purple logo | bats fly across, small ghosts rise along the edges, a spider lowers itself from the top of the news |
+
+- **By date:** `themes` in `config.js` lists when each theme is on (`MM-DD`, inclusive;
+  a range may wrap over New Year):
+  ```js
+  themes: [ { name: "halloween", from: "10-19", to: "10-31" } ],
+  ```
+- **By hand:** tap "ŠC KRANJ". Each tap cycles samodejno → each theme → izklopljeno. A
+  short label under the name shows the choice. After `manualModeMinutes` it returns to
+  samodejno.
+- **Testing:** `index.html?theme=halloween` forces a theme, `?theme=off` turns them off.
+
+New themes (e.g. snow in December, hearts on Valentine's Day) use the same engine: one
+entry in `THEMES` and `SPRITES` in `index.html`, plus a date range in `config.js`.
 
 ## How the data is loaded
 
