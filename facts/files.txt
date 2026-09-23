@@ -1,0 +1,2 @@
+# Seznam datotek z zanimivostmi (ena na vrstico). Vrstice z # se ne upoštevajo.
+splosno.txt

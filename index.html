@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Info zaslon SCKR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#10264A; --navy-2:#1A3663; --paper:#E9EDF2; --white:#FFFFFF;
+  --ink:#152033; --muted:#5D6A7E; --line:#D3DAE3;
+  --signal:#F5B700; --red:#D6423A; --blue:#2B6CD9;
+  --sans:"Barlow",system-ui,sans-serif; --cond:"Barlow Condensed","Arial Narrow",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;top:0;left:0;width:1080px;height:1920px;transform-origin:0 0;
+  background:var(--paper);color:var(--ink);font-family:var(--sans);display:grid;
+  grid-template-rows:400px minmax(0,1fr) auto 150px;grid-template-columns:minmax(0,1fr)}
+
+/* ---------- WEATHER / HEADER ---------- */
+.top{background:var(--navy);color:#fff;padding:44px 56px 36px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;gap:0 40px;position:relative}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:var(--signal)}
+.clock{font-family:var(--cond);font-weight:700;font-size:168px;line-height:.85;letter-spacing:-2px}
+.date{font-size:34px;font-weight:500;opacity:.85;margin-top:14px}.date::first-letter{text-transform:uppercase}
+.school{grid-column:2;grid-row:1;text-align:right;font-family:var(--cond);font-weight:600;font-size:30px;opacity:.7;line-height:1.1}
+.now{grid-column:2;grid-row:1 / 3;align-self:end;display:flex;align-items:center;gap:18px}
+.now svg{width:130px;height:130px}
+.now .t{font-family:var(--cond);font-weight:700;font-size:120px;line-height:.9}
+.now .d{font-size:26px;opacity:.8;margin-top:6px}
+.fc{grid-column:1 / 3;display:flex;gap:10px;align-self:end;margin-top:26px}
+.fc div{flex:1;background:var(--navy-2);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:26px}
+.fc svg{width:44px;height:44px;flex:none}
+.fc b{font-family:var(--cond);font-weight:600;font-size:28px;opacity:.75;width:54px}
+.fc span{margin-left:auto;font-weight:600}
+.fc i{font-style:normal;opacity:.55;font-weight:500;margin-left:6px}
+
+/* ---------- NEWS ---------- */
+.news{padding:36px 56px 22px;min-height:0;display:flex;flex-direction:column}
+.feat{background:var(--white);border-radius:22px;padding:36px 40px 30px;flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.src{display:flex;gap:14px;align-items:center;font-size:24px;color:var(--muted);font-weight:500}
+.src b{background:var(--blue);color:#fff;border-radius:8px;padding:4px 12px;font-weight:600}
+.feat h2{font-family:var(--cond);font-weight:700;font-size:80px;line-height:1;margin:26px 0 22px;letter-spacing:-.5px}
+.feat p{font-size:34px;line-height:1.4;color:#3A475B;max-width:26em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
+.feat.img{padding-top:0}
+.feat .pic{margin:0 -40px 26px;height:330px;background:#C9D4E3 center/cover no-repeat;flex:none}
+.feat.img h2{font-size:64px;margin:18px 0 14px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.feat.img p{-webkit-line-clamp:2;font-size:30px}
+.next{margin-top:auto;border-top:2px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:12px}
+.next div{display:flex;gap:16px;font-size:26px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next div b{color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.feat.swap{animation:swap .6s ease}
+@keyframes swap{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.bar{position:absolute;left:0;bottom:0;height:6px;background:var(--blue);width:0}
+.dots{display:flex;gap:10px;margin-top:18px;justify-content:center}
+.dots span{width:14px;height:14px;border-radius:7px;background:#C2CBD6;transition:width .4s}
+.dots span.on{width:44px;background:var(--navy)}
+
+/* ---------- SUBSTITUTIONS (compact) ---------- */
+.subs{padding:0 56px 24px}
+.subs-h{display:flex;align-items:center;gap:18px;margin-bottom:12px}
+.subs-h h1{font-family:var(--cond);font-weight:800;font-size:36px;flex:none}
+.chips{display:flex;gap:6px;flex:1;overflow:hidden}
+.chips span{font-family:var(--cond);font-weight:700;font-size:22px;padding:2px 10px;border-radius:7px;background:#D7DEE7;color:var(--muted);position:relative;overflow:hidden;flex:none}
+.chips span.on{background:var(--navy);color:#fff}
+.chips span.on::after{content:"";position:absolute;left:0;bottom:0;height:4px;background:var(--signal);animation:fill var(--dur) linear forwards}
+@keyframes fill{from{width:0}to{width:100%}}
+.cls{display:grid;grid-template-columns:130px minmax(0,1fr);background:var(--white);border-radius:14px;overflow:hidden}
+.cls-h{background:var(--navy);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px}
+.cls-h b{font-family:var(--cond);font-weight:800;font-size:44px;line-height:1}
+.cls-h span{font-size:18px;opacity:.7}
+.row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;align-items:center;padding:8px 18px}
+.row+.row{border-top:1px solid var(--line)}
+.h{font-family:var(--cond);font-weight:700;font-size:28px;background:#D7DEE7;color:var(--navy);border-radius:8px;text-align:center;line-height:40px}
+.line{display:flex;align-items:baseline;gap:14px;white-space:nowrap;overflow:hidden}
+.subj{font-weight:700;font-size:27px}
+.who{font-size:23px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.who em{font-style:normal;color:var(--ink);font-weight:600}
+.room{font-family:var(--cond);font-weight:700;font-size:30px;text-align:right}
+.tag{font-size:17px;font-weight:700;border-radius:5px;padding:1px 7px;flex:none;align-self:center}
+.row.off .subj{text-decoration:line-through;text-decoration-thickness:3px;color:var(--muted)}
+.row.off .h{background:var(--red);color:#fff}
+.row.off .tag{background:var(--red);color:#fff}
+.row.room-ch .tag{background:var(--signal);color:var(--ink)}
+.row.room-ch .room{color:#B07F00}
+.cols.swap{animation:swap .6s ease}
+.cols>.cls{height:100%}
+
+/* ---------- FOOTER ---------- */
+.foot{background:var(--white);border-top:6px solid var(--navy);display:flex;align-items:center;gap:30px;padding:0 56px}
+.foot .q{flex:none;width:84px;height:84px;border-radius:42px;background:var(--signal);display:grid;place-items:center;font-family:var(--cond);font-weight:800;font-size:56px;color:var(--navy)}
+.foot b{display:block;font-family:var(--cond);font-weight:700;font-size:30px;color:var(--navy)}
+.foot p{font-size:27px;line-height:1.3;color:#3A475B}
+
+.brand{display:flex;align-items:center;gap:34px}
+.logo{flex:none;height:176px;color:#fff;transition:color 1s ease}
+.logo svg{display:block;height:100%;width:auto;max-width:200px}
+@media (prefers-reduced-motion:reduce){.logo{transition:none}}
+.foot>div:nth-child(2){flex:1;min-width:0}
+#fact{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.cd{flex:none;padding-left:30px;border-left:2px solid var(--line);text-align:right}
+.cd[hidden]{display:none}
+.foot .cd span{display:block;font-size:22px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.foot .cd b{font-family:var(--cond);font-weight:800;font-size:54px;line-height:1.05;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.feat.swap,.cols.swap{animation:none}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <header class="top">
+    <div class="brand">
+      <div class="logo" id="logo"></div>
+      <div>
+        <div class="clock" id="clock">00:00</div>
+        <div class="date" id="date"></div>
+      </div>
+    </div>
+    <div class="now" id="now"></div>
+    <div class="fc" id="fc"></div>
+  </header>
+
+  <section class="news">
+    <article class="feat" id="feat"></article>
+    <div class="dots" id="dots"></div>
+  </section>
+
+  <section class="subs">
+    <div class="subs-h"><h1>Nadomeščanja</h1><div class="chips" id="chips"></div></div>
+    <div class="cols" id="cols"></div>
+  </section>
+
+  <footer class="foot">
+    <div class="q">?</div>
+    <div><b>Ali veš?</b><p id="fact"></p></div>
+    <div class="cd" id="cd" hidden><span id="cdLabel"></span><b id="cdTime"></b></div>
+  </footer>
+</div>
+
+<script src="config.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   Info zaslon SCKR – live data. Design/CSS/animations are the template's;
+   this script only feeds them real data.
+   ===================================================================== */
+
+/* ---------- config (+ URL overrides: ?name=value) ---------- */
+const CONFIG=Object.assign({},window.CONFIG||{});
+for(const [k,v] of new URLSearchParams(location.search)){
+ if(!(k in CONFIG)) continue;
+ const d=CONFIG[k];
+ if(Array.isArray(d)&&typeof d[0]==='object')continue; // e.g. holidays: config.js only
+ if(typeof d==='number'){const n=parseFloat(v);if(!isNaN(n))CONFIG[k]=n}
+ else if(Array.isArray(d)){const a=v.split(',').map(s=>s.trim()).filter(Boolean).map(s=>/^[0-9a-f]{3,8}$/i.test(s)?'#'+s:s);if(a.length)CONFIG[k]=a}
+ else CONFIG[k]=v;
+}
+
+/* ---------- helpers ---------- */
+const TZ='Europe/Ljubljana';
+function lj(d=new Date()){ // current wall-clock time in Ljubljana
+ const o={};for(const p of new Intl.DateTimeFormat('en-GB',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(d))o[p.type]=p.value;
+ return {h:+o.hour,min:+o.minute,ymd:`${o.year}-${o.month}-${o.day}`}}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+const clean=s=>String(s??'').replace(/ /g,' ').replace(/\s+/g,' ').trim();
+const log=(...a)=>console.warn('[info-zaslon]',...a);
+
+// All cross-origin fetches go through here. Same-origin files (facts, logo,
+// example.html) are fetched directly, never through the proxy.
+async function fetchText(url){
+ const abs=new URL(url,location.href);
+ const cross=abs.origin!==location.origin;
+ const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),20000);
+ try{
+  const r=await fetch(cross&&CONFIG.proxy?CONFIG.proxy+encodeURIComponent(abs.href):abs.href,{signal:ctl.signal,cache:'no-store'});
+  if(!r.ok)throw new Error(`HTTP ${r.status} ${url}`);
+  return await r.text();
+ }finally{clearTimeout(to)}
+}
+
+/* ---------- scaling to any portrait screen ---------- */
+const stage=document.getElementById('stage');
+function fit(){const s=Math.min(innerWidth/1080,innerHeight/1920);
+  stage.style.transform=`translate(${(innerWidth-1080*s)/2}px,${(innerHeight-1920*s)/2}px) scale(${s})`}
+addEventListener('resize',fit);fit();
+
+/* ---------- clock ---------- */
+function tick(){const d=new Date();
+  document.getElementById('clock').textContent=d.toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit',timeZone:TZ});
+  document.getElementById('date').textContent=d.toLocaleDateString('sl-SI',{weekday:'long',day:'numeric',month:'long',timeZone:TZ});}
+tick();setInterval(tick,1000);
+
+/* ---------- countdown to the next school holiday (footer) ---------- */
+// Ljubljana wall-clock time -> epoch ms (correct for summer/winter time, whatever the kiosk's time zone).
+function ljEpoch(y,mo,d,h=0,mi=0,se=0){
+ const guess=Date.UTC(y,mo-1,d,h,mi,se);
+ const off=t=>{const o={};for(const p of new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).formatToParts(t))o[p.type]=+p.value;
+  return Date.UTC(o.year,o.month-1,o.day,o.hour,o.minute,o.second)-t};
+ let t=guess-off(guess);return guess-off(t);
+}
+// "2026-10-26" (= 00:00 that day) or "2026-10-23T13:30"
+function parseLj(v,addDays=0){
+ const m=String(v||'').match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);if(!m)return NaN;
+ return ljEpoch(+m[1],+m[2],+m[3]+addDays,m[4]?+m[4]:0,m[5]?+m[5]:0);
+}
+const dniSl=n=>n===1?'dan':n===2?'dneva':'dni'; // čez 1 dan / 2 dneva / 3 dni
+// Returns {label,time} for the given moment, or null when no holiday is ahead.
+function countdownState(now=Date.now()){
+ const list=(CONFIG.holidays||[]).map(x=>({name:x.name,start:parseLj(x.start),
+   end:/T/.test(x.end||'')?parseLj(x.end):parseLj(x.end,1)})) // a plain end date counts up to the end of that day
+  .filter(x=>x.name&&!isNaN(x.start)&&!isNaN(x.end)).sort((a,b)=>a.start-b.start);
+ const h=list.find(x=>x.end>now);if(!h)return null;
+ const during=now>=h.start,ms=(during?h.end:h.start)-now;
+ const sec=Math.floor(ms/1000),days=Math.floor(sec/86400),hh=Math.floor(sec%86400/3600),mm=Math.floor(sec%3600/60),ss=sec%60;
+ const p=n=>String(n).padStart(2,'0');
+ return {label:`${h.name} ${during?'še':'čez'}`,time:(days?`${days} ${dniSl(days)} `:'')+`${p(hh)}:${p(mm)}:${p(ss)}`};
+}
+const cdEl=document.getElementById('cd'),cdLabel=document.getElementById('cdLabel'),cdTime=document.getElementById('cdTime');
+function tickCountdown(){
+ const st=countdownState();cdEl.hidden=!st;if(!st)return;
+ if(cdLabel.textContent!==st.label)cdLabel.textContent=st.label;
+ cdTime.textContent=st.time;
+}
+tickCountdown();
+// tick right on each full second, so the seconds never skip or stutter
+(function loop(){tickCountdown();setTimeout(loop,1000-Date.now()%1000+5)})();
+
+/* ---------- logo (inline SVG, recoloured every minute) ---------- */
+const logoEl=document.getElementById('logo');
+async function loadLogo(){
+ try{
+  const doc=new DOMParser().parseFromString(await fetchText(CONFIG.logo),'image/svg+xml');
+  const svg=doc.documentElement;
+  if(svg.localName!=='svg')throw new Error('not an SVG');
+  svg.querySelectorAll('metadata,title,script').forEach(e=>e.remove());
+  [...svg.getElementsByTagName('*')].filter(e=>e.localName==='namedview').forEach(e=>e.remove());
+  // Force every fill/stroke to currentColor, but keep fill="none" / stroke="none".
+  for(const el of [svg,...svg.querySelectorAll('*')]){
+   if(el.closest('clipPath,mask'))continue;
+   for(const p of ['fill','stroke']){
+    const a=el.getAttribute(p);
+    if(a&&a!=='none')el.setAttribute(p,'currentColor');
+    const st=el.style&&el.style.getPropertyValue(p);
+    if(st&&st!=='none')el.style.setProperty(p,'currentColor');
+   }
+  }
+  // Shapes without any fill would default to black: make them currentColor too.
+  svg.querySelectorAll('path,circle,rect,ellipse,polygon,polyline,text').forEach(el=>{
+   if(!el.closest('defs,clipPath,mask')&&!el.getAttribute('fill')&&!(el.style&&el.style.getPropertyValue('fill')))el.setAttribute('fill','currentColor')});
+  svg.removeAttribute('width');svg.removeAttribute('height');
+  svg.setAttribute('aria-hidden','true');
+  logoEl.replaceChildren(document.importNode(svg,true));
+  // Crop the viewBox to the drawing (Inkscape files often use a whole A4 page).
+  // Union of the on-screen boxes of all visible shapes, mapped back into SVG units
+  // (getBBox() on the group is unreliable with Inkscape clip paths).
+  const live=logoEl.firstElementChild;
+  try{
+   const inv=live.getScreenCTM().inverse();let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity;
+   live.querySelectorAll('path,circle,rect,ellipse,polygon,polyline,line,text,use,image').forEach(el=>{
+    if(el.closest('defs,clipPath,mask'))return;
+    const r=el.getBoundingClientRect();if(!r.width&&!r.height)return;
+    for(const [x,y] of [[r.left,r.top],[r.right,r.bottom]]){const p=new DOMPoint(x,y).matrixTransform(inv);
+     x1=Math.min(x1,p.x);y1=Math.min(y1,p.y);x2=Math.max(x2,p.x);y2=Math.max(y2,p.y)}});
+   if(x2>x1&&y2>y1)live.setAttribute('viewBox',`${x1} ${y1} ${x2-x1} ${y2-y1}`);
+  }catch(e){}
+ }catch(e){log('logo',e)}
+}
+let li=0;
+function logoColour(){const c=CONFIG.logoColors;if(c&&c.length){logoEl.style.color=c[li%c.length];li++}}
+logoColour();loadLogo();setInterval(logoColour,60000);
+
+/* ---------- weather (Open-Meteo, no key, CORS ok) ---------- */
+const ic={
+ sun:`<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="13" fill="#F5B700"/><g stroke="#F5B700" stroke-width="4" stroke-linecap="round">${[0,45,90,135,180,225,270,315].map(a=>`<line x1="32" y1="6" x2="32" y2="12" transform="rotate(${a} 32 32)"/>`).join('')}</g></svg>`,
+ part:`<svg viewBox="0 0 64 64"><circle cx="24" cy="24" r="11" fill="#F5B700"/><path d="M20 50h28a10 10 0 0 0 0-20 14 14 0 0 0-26 4 8 8 0 0 0-2 16z" fill="#fff"/></svg>`,
+ cloud:`<svg viewBox="0 0 64 64"><path d="M16 48h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#C9D4E3"/></svg>`,
+ rain:`<svg viewBox="0 0 64 64"><path d="M16 38h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#C9D4E3"/><g stroke="#6FA8FF" stroke-width="4" stroke-linecap="round"><line x1="22" y1="46" x2="19" y2="56"/><line x1="33" y1="46" x2="30" y2="56"/><line x1="44" y1="46" x2="41" y2="56"/></g></svg>`,
+ snow:`<svg viewBox="0 0 64 64"><path d="M16 38h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#C9D4E3"/><g fill="#fff"><circle cx="21" cy="48" r="3.5"/><circle cx="32" cy="52" r="3.5"/><circle cx="43" cy="48" r="3.5"/><circle cx="26" cy="59" r="2.5"/><circle cx="38" cy="59" r="2.5"/></g></svg>`,
+ fog:`<svg viewBox="0 0 64 64"><path d="M16 36h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#C9D4E3"/><g stroke="#C9D4E3" stroke-width="4" stroke-linecap="round" opacity=".8"><line x1="10" y1="45" x2="54" y2="45"/><line x1="16" y1="53" x2="48" y2="53"/><line x1="22" y1="61" x2="42" y2="61"/></g></svg>`
+};
+// WMO weather code -> [icon, Slovenian description]
+function wmo(c){
+ if(c<=1)return['sun',c===0?'Jasno':'Pretežno jasno'];
+ if(c===2)return['part','Delno oblačno'];
+ if(c===3)return['cloud','Oblačno'];
+ if(c===45||c===48)return['fog','Megla'];
+ if(c>=51&&c<=55)return['rain','Rosenje'];
+ if(c===56||c===57)return['rain','Zmrzujoče rosenje'];
+ if(c===61)return['rain','Rahel dež'];
+ if(c===63)return['rain','Dež'];
+ if(c===65)return['rain','Močan dež'];
+ if(c===66||c===67)return['rain','Žled'];
+ if(c===71)return['snow','Rahlo sneženje'];
+ if(c===73)return['snow','Sneženje'];
+ if(c===75)return['snow','Močno sneženje'];
+ if(c===77)return['snow','Snežna zrna'];
+ if(c>=80&&c<=82)return['rain',c===82?'Močne plohe':'Plohe'];
+ if(c===85||c===86)return['snow','Snežne plohe'];
+ if(c===95)return['rain','Nevihta'];
+ if(c===96||c===99)return['rain','Nevihta s točo'];
+ return['cloud','Oblačno'];
+}
+const DAYS=['Ned','Pon','Tor','Sre','Čet','Pet','Sob'];
+async function loadWeather(){
+ try{
+  const u=`https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}`+
+   `&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code`+
+   `&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(TZ)}&forecast_days=3`;
+  const r=await fetch(u,{cache:'no-store'}); // Open-Meteo allows CORS: no proxy needed
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const j=await r.json();
+  const [icon,desc]=wmo(j.current.weather_code);
+  // next two 3-hour slots (15h, 18h, …) after the current time
+  const now=j.current.time,H=j.hourly,slots=[];
+  for(let i=0;i<H.time.length&&slots.length<2;i++){const h=+H.time[i].slice(11,13);
+   if(H.time[i]>now&&h%3===0)slots.push({d:h+'h',i:wmo(H.weather_code[i])[0],t:Math.round(H.temperature_2m[i])})}
+  const D=j.daily;
+  const days=[1,2].map(k=>({d:DAYS[new Date(D.time[k]+'T12:00').getDay()],i:wmo(D.weather_code[k])[0],t:Math.round(D.temperature_2m_max[k]),m:Math.round(D.temperature_2m_min[k])}));
+  const w={temp:Math.round(j.current.temperature_2m),icon,desc:`${desc}, ${CONFIG.place}`,fc:[...slots,...days]};
+  document.getElementById('now').innerHTML=`${ic[w.icon]}<div><div class="t">${w.temp}°</div><div class="d">${esc(w.desc)}</div></div>`;
+  document.getElementById('fc').innerHTML=w.fc.map(f=>`<div><b>${f.d}</b>${ic[f.i]}<span>${f.t}°${f.m!=null?`<i>${f.m}°</i>`:''}</span></div>`).join('');
+ }catch(e){log('weather',e)} // keep last good data
+}
+loadWeather();setInterval(loadWeather,15*60000);
+
+/* ---------- news (RSS) ---------- */
+function clip(t,n){return t.length>n?t.slice(0,n).replace(/\s\S*$/,'')+' …':t}
+function absUrl(src,base){if(!String(src||'').trim())return null;try{const u=new URL(src,new URL(base,location.href));return /^https?:$/.test(u.protocol)?u.href:null}catch(e){return null}}
+function mediaUrl(it,name){
+ const els=[...it.getElementsByTagNameNS('http://search.yahoo.com/mrss/',name),...it.getElementsByTagName('media:'+name)];
+ const el=els.find(e=>{const t=e.getAttribute('type')||'',m=e.getAttribute('medium')||'';
+  return name==='thumbnail'||m==='image'||t.startsWith('image/')||/\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(e.getAttribute('url')||'')});
+ return el?el.getAttribute('url'):null;
+}
+// RSS 2.0 text -> [{title,date,text,img}]
+function parseRSS(xmlText,base){
+ const doc=new DOMParser().parseFromString(xmlText,'text/xml');
+ if(doc.getElementsByTagName('parsererror').length)throw new Error('RSS parse error');
+ return [...doc.getElementsByTagName('item')].map(it=>{
+  const get=n=>it.getElementsByTagName(n)[0];
+  // Joomla: description is HTML (CDATA). First <img> that is not a file-type icon.
+  const html=new DOMParser().parseFromString(get('description')?.textContent||'','text/html');
+  // All <img> in the description except file-type icons; the largest one is chosen once loaded.
+  // Joomla often shows a small thumbnail (name ending in -m / _m) wrapped in a link to the
+  // full-size picture; the linked original and the name without -m/_m are tried first.
+  const isImg=u=>/\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(u||'');
+  const imgs=[...new Set([...html.querySelectorAll('img')].filter(i=>!i.classList.contains('wf_file_icon')).flatMap(i=>{
+   const src=i.getAttribute('src')||'',href=i.closest('a')?.getAttribute('href')||'',c=[];
+   if(isImg(href))c.push(href);
+   else{const full=src.replace(/[-_]m(\.(?:jpe?g|png|webp|gif))(\?.*)?$/i,'$1$2');if(full!==src)c.push(full)}
+   c.push(src);return c.map(u=>absUrl(u,base));
+  }).filter(Boolean))];
+  if(!imgs.length){ // RTV & co.: <enclosure>, <media:content>, <media:thumbnail>
+   const enc=[...it.getElementsByTagName('enclosure')].find(e=>(e.getAttribute('type')||'').startsWith('image/')||/\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(e.getAttribute('url')||''));
+   const u=absUrl(enc?.getAttribute('url')||mediaUrl(it,'content')||mediaUrl(it,'thumbnail')||'',base);if(u)imgs.push(u);
+  }
+  html.querySelectorAll('br').forEach(b=>b.replaceWith(' '));
+  html.querySelectorAll('p,div,li,h1,h2,h3,h4,h5,h6,td,tr,blockquote').forEach(e=>e.append(' '));
+  const d=new Date(get('pubDate')?.textContent||'');
+  return {title:clean(get('title')?.textContent),link:clean(get('link')?.textContent),date:isNaN(d)?null:d,
+   text:clip(clean(html.body?html.body.textContent:''),1500),img:imgs[0]||null,imgs};
+ }).filter(n=>n.title);
+}
+function when(d){if(!d)return'';d=new Date(d);const t=new Date();t.setHours(0,0,0,0);
+ const diff=Math.round((t-new Date(d).setHours(0,0,0,0))/864e5);
+ return diff===0?'danes':diff===1?'včeraj':d.toLocaleDateString('sl-SI',{day:'numeric',month:'long'})}
+
+const feeds={school:[],afternoon:[],general:[]}; // last good items per feed
+const badImg=new Set(),seenImg=new Set();
+const imgArea=new Map(); // image URL -> width×height in pixels, known once loaded
+function preload(items){items.forEach(n=>{for(const u of n.imgs||[]){
+ if(seenImg.has(u))continue;seenImg.add(u);const im=new Image();
+ im.onload=()=>{imgArea.set(u,im.naturalWidth*im.naturalHeight);if(n.imgs.length>1){rebuildNews();upgradeShownPic()}};
+ im.onerror=()=>{badImg.add(u);rebuildNews()};im.src=u}})}
+// Several images in one post: use the largest (most pixels) that loaded; until they
+// have loaded, the first one that isn't broken.
+// The card on screen switches to a larger image as soon as that one has loaded.
+let shownItem=null;
+function upgradeShownPic(){
+ const n=shownItem,pic=feat.querySelector('.pic');if(!n||!pic)return;
+ const b=bestImg(n);if(b&&b!==n.img){n.img=b;pic.style.backgroundImage=`url(${JSON.stringify(b)})`}
+}
+function bestImg(n){
+ const ok=(n.imgs||[]).filter(u=>!badImg.has(u));
+ let best=null,area=0;for(const u of ok){const a=imgArea.get(u)||0;if(a>area){area=a;best=u}}
+ return best||ok[0]||null;
+}
+const FEEDS={school:'schoolRss',afternoon:'afternoonRss',general:'generalRss'};
+const listOf=v=>(Array.isArray(v)?v:String(v||'').split(',')).map(s=>s.trim()).filter(Boolean);
+const keyOf=n=>n.link||n.title;
+const byDate=(a,b)=>(b.date||0)-(a.date||0);
+const generalByUrl=new Map(); // last good items per RTV feed
+async function loadFeed(k){
+ if(k==='general'){ // several RTV feeds, merged into one pool without duplicates
+  const urls=listOf(CONFIG.generalRss);
+  await Promise.all(urls.map(async u=>{
+   try{const items=parseRSS(await fetchText(u),u);if(items.length){generalByUrl.set(u,items);preload(items)}}
+   catch(e){log('generalRss',u,e)} // keep last good
+  }));
+  const seen=new Set(),all=[];
+  for(const u of urls)for(const n of generalByUrl.get(u)||[])if(!seen.has(keyOf(n))){seen.add(keyOf(n));all.push(n)}
+  feeds.general=all;
+  return;
+ }
+ const url=CONFIG[FEEDS[k]];if(!url)return;
+ try{const items=parseRSS(await fetchText(url),url);if(items.length){feeds[k]=items;preload(items)}}
+ catch(e){log(FEEDS[k],e)} // keep last good
+}
+async function loadFeeds(keys){await Promise.all(keys.map(loadFeed));if(!rtvBatch.length&&feeds.general.length)pickRtvBatch();rebuildNews()}
+
+/* Event mode: from switchHour (14:00) until eventsOffHour (06:00) the next morning,
+   only afternoonRss is shown – but only if it has current items (not older than
+   afternoonMaxDays). Otherwise the regular news keep running. */
+function inEventWindow(){
+ const h=lj().h,on=CONFIG.switchHour,off=CONFIG.eventsOffHour;
+ return on>off?(h>=on||h<off):(h>=on&&h<off);
+}
+/* RTV: only items from today and yesterday (CONFIG.generalDays). Each pass through the
+   rotation shows the next batch of CONFIG.generalMax items: newest not-yet-shown first,
+   so fresh items come up on the next pass and older ones are not repeated every time.
+   When everything has been shown, it starts over with the newest. */
+let rtvBatch=[],rtvShown=new Set();
+function rtvPool(){
+ const cut=new Date();cut.setHours(0,0,0,0);cut.setDate(cut.getDate()-Math.max(0,(CONFIG.generalDays??2)-1));
+ const all=[...feeds.general].sort(byDate),fresh=all.filter(n=>n.date&&n.date>=cut);
+ return fresh.length?fresh:all.slice(0,CONFIG.generalMax); // never leave RTV empty
+}
+function pickRtvBatch(){
+ // batch size = number of school items, so the rotation strictly alternates school/RTV
+ const sc=Math.min(feeds.school.length,CONFIG.schoolMax);
+ const pool=rtvPool(),n=sc?Math.min(sc,CONFIG.generalMax):CONFIG.generalMax,keys=new Set(pool.map(keyOf));
+ rtvShown=new Set([...rtvShown].filter(k=>keys.has(k))); // forget items that dropped out
+ let batch=pool.filter(x=>!rtvShown.has(keyOf(x))).slice(0,n);
+ if(batch.length<n){ // pool used up: start a new round, top up with the newest
+  rtvShown.clear();
+  const inB=new Set(batch.map(keyOf));
+  batch=batch.concat(pool.filter(x=>!inB.has(keyOf(x))).slice(0,n-batch.length));
+ }
+ batch.forEach(x=>rtvShown.add(keyOf(x)));
+ rtvBatch=batch;
+}
+function buildNews(){
+ const take=(arr,badge,max)=>[...arr].sort(byDate).slice(0,max).map(n=>({...n,img:bestImg(n),src:badge}));
+ const maxAge=CONFIG.afternoonMaxDays>0?CONFIG.afternoonMaxDays*864e5:Infinity;
+ const events=take(feeds.afternoon.filter(n=>n.date&&Date.now()-n.date<=maxAge),CONFIG.afternoonBadge,CONFIG.afternoonMax);
+ // Regular news alternate: school, RTV, school, RTV, … (school first). When one feed
+ // runs out, the rest of the other follows.
+ const sch=take(feeds.school,CONFIG.schoolBadge,CONFIG.schoolMax),gen=take(rtvBatch,CONFIG.generalBadge,CONFIG.generalMax);
+ const regular=[];
+ for(let i=0;i<Math.max(sch.length,gen.length);i++){if(sch[i])regular.push(sch[i]);if(gen[i])regular.push(gen[i])}
+ if(forcedMode==='events'){ // manual (logo click): show the event feed even if its items are old
+  const any=events.length?events:take(feeds.afternoon,CONFIG.afternoonBadge,CONFIG.afternoonMax);
+  if(any.length)return{mode:'events',list:any};
+ }
+ if(forcedMode==='regular'&&regular.length)return{mode:'regular',list:regular};
+ if(inEventWindow()&&events.length)return{mode:'events',list:events};
+ return{mode:'regular',list:regular};
+}
+
+/* Click/tap on the logo: switch between regular and event news by hand.
+   Returns to the automatic schedule after CONFIG.manualModeMinutes (0 = until the next reload). */
+let forcedMode=null,forcedTimer;
+logoEl.style.cursor='pointer';
+logoEl.addEventListener('click',()=>{
+ forcedMode=newsMode==='events'?'regular':'events';
+ clearTimeout(forcedTimer);
+ const mins=CONFIG.manualModeMinutes??10; // default when missing from config.js
+ if(mins>0)forcedTimer=setTimeout(()=>{forcedMode=null;rebuildNews()},mins*60000);
+ rebuildNews();
+ if(!feeds.afternoon.length)loadFeeds(['afternoon']);
+});
+
+let news=[],newsMode='',newsSig='',ni=0,newsTimer;
+const feat=document.getElementById('feat'),dots=document.getElementById('dots');
+function rebuildNews(){
+ const {mode,list}=buildNews();
+ const sig=list.map(n=>n.src+n.title+n.img).join('|');
+ if(sig===newsSig&&mode===newsMode)return;
+ const restart=!news.length||mode!==newsMode;
+ news=list;newsSig=sig;newsMode=mode;
+ dots.innerHTML=news.map(()=>'<span></span>').join('');
+ // Mode change (events on/off) or first data: start fresh. Otherwise just swap the
+ // data under the running rotation, without jumping or restarting the card.
+ if(restart){ni=0;restartNews()}
+ else{ni=news.length?ni%news.length:0;const cur=(ni-1+news.length)%news.length;
+  [...dots.children].forEach((d,i)=>d.classList.toggle('on',i===cur))}
+}
+function showNews(){
+ if(!news.length){ // quiet placeholder until the first feed arrives
+  if(!feat.innerHTML){feat.className='feat';feat.innerHTML='<div class="src"><b>SCKR</b></div><h2>Šolski center Kranj</h2><p>Novice se nalagajo …</p>'}
+  return}
+ ni%=news.length;const n=news[ni];shownItem=n;
+ feat.className='feat'+(n.img?' img':'');
+ const nxt=[1,2].slice(0,Math.max(0,news.length-1)).map(k=>news[(ni+k)%news.length]);
+ feat.innerHTML=`${n.img?`<div class="pic"></div>`:''}<div class="src"><b>${esc(n.src)}</b>${when(n.date)}</div><h2>${esc(n.title)}</h2><p>${esc(n.text)}</p><div class="next">${nxt.map(x=>`<div>${when(x.date)}<b>${esc(x.title)}</b></div>`).join('')}</div><div class="bar" id="bar"></div>`;
+ if(n.img)feat.querySelector('.pic').style.backgroundImage=`url(${JSON.stringify(n.img)})`;
+ fitText();
+ void feat.offsetWidth;feat.classList.add('swap');
+ [...dots.children].forEach((d,i)=>d.classList.toggle('on',i===ni));
+ document.getElementById('bar').animate([{width:'0%'},{width:'100%'}],{duration:10000,easing:'linear',fill:'forwards'});
+ ni=(ni+1)%news.length;
+ if(ni===0&&newsMode==='regular'&&feeds.general.length){pickRtvBatch();rebuildNews()} // next pass: next RTV batch
+}
+// Let the description fill all free space on the card: as many lines as fit between
+// the text and the "next" list (the template's fixed 5 / 2 line clamp is only the minimum).
+function fitText(){
+ const p=feat.querySelector('p'),nx=feat.querySelector('.next');if(!p)return;
+ const lh=parseFloat(getComputedStyle(p).lineHeight)||40;
+ const bottom=feat.clientHeight-parseFloat(getComputedStyle(feat).paddingBottom)-(nx?nx.offsetHeight+20:0);
+ p.style.webkitLineClamp=String(Math.max(2,Math.floor((bottom-p.offsetTop)/lh)));
+}
+if(document.fonts)document.fonts.ready.then(fitText); // re-measure once the web fonts are in
+function restartNews(){clearInterval(newsTimer);showNews();newsTimer=setInterval(showNews,10000)}
+// Refresh: regular feeds every 10 min; the event feed every 5 min, but only inside the
+// event window (outside it, once an hour is plenty).
+restartNews();loadFeeds(['school','general','afternoon']);
+setInterval(()=>loadFeeds(['school']),10*60000);
+setInterval(()=>loadFeeds(['general']),5*60000); // RTV: fresh items every 5 min
+let evTick=0;
+setInterval(()=>{evTick++;if(inEventWindow()||evTick%12===0)loadFeeds(['afternoon'])},5*60000);
+
+/* ---------- substitutions (eAsistent) ---------- */
+// type: 'sub' = nadomeščanje, 'off' = odpade, 'room' = menjava učilnice
+const subsDay=()=>CONFIG.subsDate||lj().ymd;
+// The public page https://urniki.easistent.com/nadomescanja/<hash> loads its list via XHR
+// from /nadomescanja/<hash>/<YYYY-MM-DD>/seznam  ->  {"status":"ok","data":"<html fragment>"}.
+// The live URL is turned into that endpoint; any other URL (e.g. example.html) is fetched as is.
+function easistentUrl(day){
+ const u=CONFIG.easistent;
+ return /\/nadomescanja\/[0-9a-f]{16,}\/?$/i.test(u)?u.replace(/\/?$/,'/')+day+'/seznam':u;
+}
+// "Zupan Kastelec Nina" (eAsistent writes surname first) -> "Zupan Kastelec N."
+const shortName=n=>{const p=clean(n).split(' ');return p.length<2?p.join(' '):p.slice(0,-1).join(' ')+' '+p[p.length-1][0]+'.'};
+const collator=new Intl.Collator('sl',{numeric:true,sensitivity:'base'});
+
+/* parseEasistent(text, day) -> [{cls, rows:[{h,s,abs,by,room,type}]}]
+   Accepts either the JSON response of the /seznam endpoint or a full saved page.
+   Markup it relies on (checked against the live page, September 2026):
+   - JSON: {status:"ok", data:"<html>"}; a day without entries has data "Za ta dan ni nadomeščanj."
+   - Full page: <input id="datum" value="23. 9. 2026"> holds the date shown.
+   - div.card whose .card-title contains "po razredih" ("Nadomeščanja po razredih"),
+     inside it table.table_list with columns: Razred | Ura | Nadomešča | Učilnica | Opombe.
+     (The second card, "Nadomeščanja po učiteljih", is ignored.)
+   - The first row of each class starts with <td rowspan="N" class="no-hover">1.Ee</td>;
+     the following rows of that class omit this cell.
+   - "Ura" cell: "3."
+   - "Nadomešča" cell: <strong>Priimek Ime</strong>, PREDMET <div>namesto Priimek Ime, PREDMET</div>
+     A cancelled lesson has <strong class="text-danger">odpade</strong> instead of a name.
+   - "Učilnica" / "Opombe": plain text, "/" means empty.
+   - Room change only: no sample in the data yet. Detected when the substitute is the
+     absent teacher themself, or when the cell or the note mentions "učilnic…". */
+function parseEasistent(text,day){
+ let html=text;const t=text.trim();
+ if(t.startsWith('{')){
+  const j=JSON.parse(t);
+  if(j.status!=='ok'||typeof j.data!=='string')throw new Error('eAsistent status '+j.status);
+  html=j.data;
+ }
+ const doc=new DOMParser().parseFromString(html,'text/html');
+ // Full saved page: only accept it when it shows the requested day.
+ const inp=doc.querySelector('#datum');
+ if(inp){const m=(inp.getAttribute('value')||'').match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})/);
+  if(m&&`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`!==day)return[]}
+ const cards=[...doc.querySelectorAll('.card')];
+ const card=cards.find(c=>/po razredih/i.test(c.querySelector('.card-title')?.textContent||''));
+ const table=card&&card.querySelector('table.table_list');
+ if(!table){
+  if(/ni nadome/i.test(doc.body.textContent)||cards.some(c=>c.querySelector('.card-title')))return[];
+  throw new Error('eAsistent: table not found (markup changed?)');
+ }
+ const groups=new Map();let cls=null;
+ for(const tr of table.querySelectorAll('tr')){
+  if(tr.closest('thead')||tr.querySelector('th'))continue;
+  const tds=[...tr.children].filter(e=>e.tagName==='TD');
+  if(tds[0]&&(tds[0].hasAttribute('rowspan')||tds[0].classList.contains('no-hover')||tds.length>=5))cls=clean(tds.shift().textContent);
+  if(!cls||tds.length<3)continue;
+  const [hC,whoC,roomC,noteC]=tds;
+  const hm=clean(hC.textContent).match(/\d+/);
+  const strong=whoC.querySelector('strong');
+  const off=!!strong&&(strong.classList.contains('text-danger')||/odpade/i.test(strong.textContent));
+  const by=off?'':clean(strong&&strong.textContent);
+  // Subject taught now = text right after <strong> (", NAR"); the absent teacher's subject is in the "namesto" div.
+  const newSubj=clean([...whoC.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join(' ')).replace(/^,\s*/,'');
+  const nam=[...whoC.querySelectorAll('div')].map(d=>clean(d.textContent)).find(s=>/^namesto\b/i.test(s))||'';
+  const nm=nam.match(/^namesto\s+(.+?)(?:,\s*([^,]+))?$/i)||[];
+  const absFull=clean(nm[1]),oldSubj=clean(nm[2]);
+  let room=clean(roomC.textContent);if(/^[\/\-–]?$/.test(room))room='';
+  let note=clean(noteC&&noteC.textContent);if(note==='/')note='';
+  let type=off?'off':'sub';
+  if(!off&&((by&&by===absFull)||/učilnic/i.test(whoC.textContent+' '+note)))type='room';
+  const row={h:hm?+hm[0]:clean(hC.textContent).replace(/\.$/,''),s:off?(oldSubj||newSubj):(newSubj||oldSubj),
+   abs:absFull?shortName(absFull):'',by:by?shortName(by):'',room,type};
+  if(!groups.has(cls))groups.set(cls,[]);
+  groups.get(cls).push(row);
+ }
+ return [...groups].map(([c,rows])=>({cls:c,rows:rows.sort((a,b)=>(+a.h||0)-(+b.h||0))}))
+  .sort((a,b)=>collator.compare(a.cls,b.cls));
+}
+
+let subs=[],subsFor='',subsSig=null;
+const rowHTML=r=>{
+ const tag=r.type==='off'?'<span class="tag">Odpade</span>':r.type==='room'?'<span class="tag">Nova učilnica</span>':'';
+ const who=r.type==='sub'?(r.abs?`${esc(r.abs)} <span>→</span> <em>${esc(r.by)}</em>`:`<em>${esc(r.by)}</em>`):r.type==='off'?`${r.abs?esc(r.abs)+', ':''}ura odpade`:'Pouk poteka v drugi učilnici';
+ return `<div class="row ${r.type==='off'?'off':r.type==='room'?'room-ch':''}"><div class="h">${esc(r.h)}.</div>
+  <div class="line"><span class="subj">${esc(r.s)}</span>${tag}<span class="who">${who}</span></div><div class="room">${esc(r.room||'')}</div></div>`};
+const DUR=7000;let ci=0,subsTimer;
+const cols=document.getElementById('cols'),chips=document.getElementById('chips');
+chips.style.setProperty('--dur',DUR+'ms');
+const nSp=n=>n===1?'sprememba':n===2?'spremembi':n<5?'spremembe':'sprememb';
+const todaysSubs=()=>subsFor===subsDay()?subs:[]; // never show another day's data
+function showSubs(){
+ const list=todaysSubs();
+ if(!list.length){cols.innerHTML='<p style="font-size:30px;color:var(--muted)">Danes ni nadomeščanj.</p>';return}
+ ci%=list.length;const c=list[ci];
+ cols.innerHTML=`<div class="cls"><div class="cls-h"><b>${esc(c.cls)}</b><span>${c.rows.length} ${nSp(c.rows.length)}</span></div><div>${c.rows.map(rowHTML).join('')}</div></div>`;
+ cols.classList.remove('swap');void cols.offsetWidth;cols.classList.add('swap');
+ [...chips.children].forEach((el,i)=>{el.classList.remove('on');if(i===ci){void el.offsetWidth;el.classList.add('on');
+  // many classes: keep the active chip inside the (overflow:hidden) chip row
+  const l=el.offsetLeft-chips.offsetLeft;
+  if(l<chips.scrollLeft||l+el.offsetWidth>chips.scrollLeft+chips.clientWidth)chips.scrollLeft=Math.max(0,l-6)}});
+ ci=(ci+1)%list.length;}
+function renderSubs(){
+ const list=todaysSubs(),sig=JSON.stringify(list);
+ if(sig===subsSig)return;
+ subsSig=sig;
+ const maxRows=Math.max(1,...list.map(c=>c.rows.length));cols.style.height=(maxRows*57)+'px';
+ chips.innerHTML=list.map(c=>`<span>${esc(c.cls)}</span>`).join('');
+ ci=0;clearInterval(subsTimer);showSubs();subsTimer=setInterval(showSubs,DUR);
+}
+async function loadSubs(){
+ const day=subsDay();
+ try{subs=parseEasistent(await fetchText(easistentUrl(day)),day);subsFor=day}
+ catch(e){log('easistent',e)} // keep last good (shown only while it is still the same day)
+ renderSubs();
+}
+renderSubs();loadSubs();setInterval(loadSubs,5*60000);
+
+/* ---------- footer "Ali veš?" ---------- */
+const factEl=document.getElementById('fact');
+let facts=[],bag=[],lastFact='';
+const lines=t=>t.split(/\r?\n/).map(s=>s.trim()).filter(s=>s&&!s.startsWith('#'));
+async function loadFacts(){
+ try{
+  const files=lines(await fetchText('facts/files.txt'));
+  const texts=await Promise.all(files.map(f=>fetchText('facts/'+encodeURI(f)).catch(e=>{log('facts',f,e);return''})));
+  const all=[...new Set(texts.flatMap(lines))];
+  if(all.length){facts=all;bag=[]}
+ }catch(e){log('facts',e)}
+ showFact();
+}
+function showFact(){
+ if(!facts.length){factEl.textContent='Prvi računalniški "hrošč" je bil pravi molj, ki se je leta 1947 ujel v rele računalnika Harvard Mark II.';return}
+ if(!bag.length){ // shuffled bag: no repeats until every fact was shown
+  bag=[...facts];for(let i=bag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[bag[i],bag[j]]=[bag[j],bag[i]]}
+  if(bag.length>1&&bag[bag.length-1]===lastFact)[bag[0],bag[bag.length-1]]=[bag[bag.length-1],bag[0]];
+ }
+ lastFact=bag.pop();factEl.textContent=lastFact;
+}
+loadFacts();setInterval(showFact,30000);
+
+/* ---------- every minute: switch hour, new day, 04:00 reload ---------- */
+const bootDay=lj().ymd;let wasEventWindow=inEventWindow();
+setInterval(()=>{
+ const t=lj();
+ const ev=inEventWindow();
+ if(ev&&!wasEventWindow)loadFeeds(['afternoon']);          // 14:00: check for events right away
+ wasEventWindow=ev;
+ rebuildNews();                                             // 14:00 on / 06:00 off, items aging out
+ if(subsFor&&subsFor!==subsDay()){renderSubs();loadSubs()}  // new day: drop yesterday's list
+ if(t.ymd!==bootDay&&t.h>=4)location.reload();              // once a day, at 04:00
+},60000);
+</script>
+</body>
+</html>

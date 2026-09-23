@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Info zaslon SCKR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#10264A; --navy-2:#1A3663; --paper:#E9EDF2; --white:#FFFFFF;
+  --ink:#152033; --muted:#5D6A7E; --line:#D3DAE3;
+  --signal:#F5B700; --red:#D6423A; --blue:#2B6CD9;
+  --sans:"Barlow",system-ui,sans-serif; --cond:"Barlow Condensed","Arial Narrow",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;top:0;left:0;width:1080px;height:1920px;transform-origin:0 0;
+  background:var(--paper);color:var(--ink);font-family:var(--sans);display:grid;
+  grid-template-rows:400px minmax(0,1fr) auto 150px;grid-template-columns:minmax(0,1fr)}
+
+/* ---------- WEATHER / HEADER ---------- */
+.top{background:var(--navy);color:#fff;padding:44px 56px 36px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;gap:0 40px;position:relative}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:var(--signal)}
+.clock{font-family:var(--cond);font-weight:700;font-size:168px;line-height:.85;letter-spacing:-2px}
+.date{font-size:34px;font-weight:500;opacity:.85;margin-top:14px}.date::first-letter{text-transform:uppercase}
+.school{grid-column:2;grid-row:1;text-align:right;font-family:var(--cond);font-weight:600;font-size:30px;opacity:.7;line-height:1.1}
+.now{grid-column:2;grid-row:1 / 3;align-self:end;display:flex;align-items:center;gap:18px}
+.now svg{width:130px;height:130px}
+.now .t{font-family:var(--cond);font-weight:700;font-size:120px;line-height:.9}
+.now .d{font-size:26px;opacity:.8;margin-top:6px}
+.fc{grid-column:1 / 3;display:flex;gap:10px;align-self:end;margin-top:26px}
+.fc div{flex:1;background:var(--navy-2);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:26px}
+.fc svg{width:44px;height:44px;flex:none}
+.fc b{font-family:var(--cond);font-weight:600;font-size:28px;opacity:.75;width:54px}
+.fc span{margin-left:auto;font-weight:600}
+.fc i{font-style:normal;opacity:.55;font-weight:500;margin-left:6px}
+
+/* ---------- NEWS ---------- */
+.news{padding:36px 56px 22px;min-height:0;display:flex;flex-direction:column}
+.feat{background:var(--white);border-radius:22px;padding:36px 40px 30px;flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.src{display:flex;gap:14px;align-items:center;font-size:24px;color:var(--muted);font-weight:500}
+.src b{background:var(--blue);color:#fff;border-radius:8px;padding:4px 12px;font-weight:600}
+.feat h2{font-family:var(--cond);font-weight:700;font-size:80px;line-height:1;margin:26px 0 22px;letter-spacing:-.5px}
+.feat p{font-size:34px;line-height:1.4;color:#3A475B;max-width:26em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
+.feat.img{padding-top:0}
+.feat .pic{margin:0 -40px 26px;height:330px;background:#C9D4E3 center/cover no-repeat;flex:none}
+.feat.img h2{font-size:64px;margin:18px 0 14px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.feat.img p{-webkit-line-clamp:2;font-size:30px}
+.next{margin-top:auto;border-top:2px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:12px}
+.next div{display:flex;gap:16px;font-size:26px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next div b{color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.feat.swap{animation:swap .6s ease}
+@keyframes swap{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.bar{position:absolute;left:0;bottom:0;height:6px;background:var(--blue);width:0}
+.dots{display:flex;gap:10px;margin-top:18px;justify-content:center}
+.dots span{width:14px;height:14px;border-radius:7px;background:#C2CBD6;transition:width .4s}
+.dots span.on{width:44px;background:var(--navy)}
+
+/* ---------- SUBSTITUTIONS (compact) ---------- */
+.subs{padding:0 56px 24px}
+.subs-h{display:flex;align-items:center;gap:18px;margin-bottom:12px}
+.subs-h h1{font-family:var(--cond);font-weight:800;font-size:36px;flex:none}
+.chips{display:flex;gap:6px;flex:1;overflow:hidden}
+.chips span{font-family:var(--cond);font-weight:700;font-size:22px;padding:2px 10px;border-radius:7px;background:#D7DEE7;color:var(--muted);position:relative;overflow:hidden;flex:none}
+.chips span.on{background:var(--navy);color:#fff}
+.chips span.on::after{content:"";position:absolute;left:0;bottom:0;height:4px;background:var(--signal);animation:fill var(--dur) linear forwards}
+@keyframes fill{from{width:0}to{width:100%}}
+.cls{display:grid;grid-template-columns:130px minmax(0,1fr);background:var(--white);border-radius:14px;overflow:hidden}
+.cls-h{background:var(--navy);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px}
+.cls-h b{font-family:var(--cond);font-weight:800;font-size:44px;line-height:1}
+.cls-h span{font-size:18px;opacity:.7}
+.row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;align-items:center;padding:8px 18px}
+.row+.row{border-top:1px solid var(--line)}
+.h{font-family:var(--cond);font-weight:700;font-size:28px;background:#D7DEE7;color:var(--navy);border-radius:8px;text-align:center;line-height:40px}
+.line{display:flex;align-items:baseline;gap:14px;white-space:nowrap;overflow:hidden}
+.subj{font-weight:700;font-size:27px}
+.who{font-size:23px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.who em{font-style:normal;color:var(--ink);font-weight:600}
+.room{font-family:var(--cond);font-weight:700;font-size:30px;text-align:right}
+.tag{font-size:17px;font-weight:700;border-radius:5px;padding:1px 7px;flex:none;align-self:center}
+.row.off .subj{text-decoration:line-through;text-decoration-thickness:3px;color:var(--muted)}
+.row.off .h{background:var(--red);color:#fff}
+.row.off .tag{background:var(--red);color:#fff}
+.row.room-ch .tag{background:var(--signal);color:var(--ink)}
+.row.room-ch .room{color:#B07F00}
+.cols.swap{animation:swap .6s ease}
+.cols>.cls{height:100%}
+
+/* ---------- FOOTER ---------- */
+.foot{background:var(--white);border-top:6px solid var(--navy);display:flex;align-items:center;gap:30px;padding:0 56px}
+.foot .q{flex:none;width:84px;height:84px;border-radius:42px;background:var(--signal);display:grid;place-items:center;font-family:var(--cond);font-weight:800;font-size:56px;color:var(--navy)}
+.foot b{display:block;font-family:var(--cond);font-weight:700;font-size:30px;color:var(--navy)}
+.foot p{font-size:27px;line-height:1.3;color:#3A475B}
+
+@media (prefers-reduced-motion:reduce){.feat.swap,.cols.swap{animation:none}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <header class="top">
+    <div>
+      <div class="clock" id="clock">00:00</div>
+      <div class="date" id="date"></div>
+    </div>
+    <div class="now" id="now"></div>
+    <div class="fc" id="fc"></div>
+  </header>
+
+  <section class="news">
+    <article class="feat" id="feat"></article>
+    <div class="dots" id="dots"></div>
+  </section>
+
+  <section class="subs">
+    <div class="subs-h"><h1>Nadomeščanja</h1><div class="chips" id="chips"></div></div>
+    <div class="cols" id="cols"></div>
+  </section>
+
+  <footer class="foot">
+    <div class="q">?</div>
+    <div><b>Ali veš?</b><p id="fact"></p></div>
+  </footer>
+</div>
+
+<script>
+/* ---------- scaling to any portrait screen ---------- */
+const stage=document.getElementById('stage');
+function fit(){const s=Math.min(innerWidth/1080,innerHeight/1920);
+  stage.style.transform=`translate(${(innerWidth-1080*s)/2}px,${(innerHeight-1920*s)/2}px) scale(${s})`}
+addEventListener('resize',fit);fit();
+
+/* ---------- clock ---------- */
+function tick(){const d=new Date();
+  document.getElementById('clock').textContent=d.toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('date').textContent=d.toLocaleDateString('sl-SI',{weekday:'long',day:'numeric',month:'long'});}
+tick();setInterval(tick,1000);
+
+/* ---------- weather (hardcoded) ---------- */
+const ic={
+ sun:`<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="13" fill="#F5B700"/><g stroke="#F5B700" stroke-width="4" stroke-linecap="round">${[0,45,90,135,180,225,270,315].map(a=>`<line x1="32" y1="6" x2="32" y2="12" transform="rotate(${a} 32 32)"/>`).join('')}</g></svg>`,
+ part:`<svg viewBox="0 0 64 64"><circle cx="24" cy="24" r="11" fill="#F5B700"/><path d="M20 50h28a10 10 0 0 0 0-20 14 14 0 0 0-26 4 8 8 0 0 0-2 16z" fill="#fff"/></svg>`,
+ cloud:`<svg viewBox="0 0 64 64"><path d="M16 48h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#C9D4E3"/></svg>`,
+ rain:`<svg viewBox="0 0 64 64"><path d="M16 38h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#C9D4E3"/><g stroke="#6FA8FF" stroke-width="4" stroke-linecap="round"><line x1="22" y1="46" x2="19" y2="56"/><line x1="33" y1="46" x2="30" y2="56"/><line x1="44" y1="46" x2="41" y2="56"/></g></svg>`
+};
+const weather={temp:17,icon:'part',desc:'Delno oblačno, Kranj',
+ fc:[{d:'15h',i:'part',t:18},{d:'18h',i:'cloud',t:15},{d:'Čet',i:'rain',t:14,m:8},{d:'Pet',i:'sun',t:19,m:9}]};
+document.getElementById('now').innerHTML=`${ic[weather.icon]}<div><div class="t">${weather.temp}°</div><div class="d">${weather.desc}</div></div>`;
+document.getElementById('fc').innerHTML=weather.fc.map(f=>`<div><b>${f.d}</b>${ic[f.i]}<span>${f.t}°${f.m!=null?`<i>${f.m}°</i>`:''}</span></div>`).join('');
+
+/* ---------- news (hardcoded RSS) ---------- */
+// Shape matches what parseRSS() returns from https://sckr.si/sts/?format=feed&type=rss
+// img is optional: the first real <img> in the item's description (file-type icons are skipped).
+const demoPic=(c1,c2,shape)=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="800" height="330" fill="url(#g)"/>${shape}</svg>`);
+const news=[
+ {title:'Kulturni dan za 1. letnik SSI',date:'2026-09-22T11:01:32+02:00',
+  text:'V torek, 29. 9. 2026, bo za dijake 1. letnika (1. Ea, 1. Eb, 1. Ma, 1. Mb, 1. Ra, 1. Rb) potekal kulturni dan. V kinu Cineplexx v Kranju si bomo ogledali film Odiseja. Dijaki imajo prvi 2 šolski uri pouk po urniku.',
+  img:demoPic('#2A1F4F','#5B3C88','<g fill="#F5B700" opacity=".9"><circle cx="620" cy="90" r="40"/></g><g fill="#1A1433"><rect x="0" y="250" width="800" height="80"/><rect x="80" y="200" width="120" height="50"/><rect x="600" y="180" width="160" height="70"/></g>')},
+ {title:'Ekskurzija »Avstrijska Koroška«',date:'2026-09-18T12:16:48+02:00',
+  text:'V četrtek, 24. 9. in petek, 25. 9. 2026, bomo za dijake prvih letnikov SSI programov organizirali strokovno ekskurzijo na avstrijsko Koroško. Odhod avtobusa je ob 7.15.',
+  img:demoPic('#8EC5F0','#DCEFFA','<path d="M0 330 L0 210 L160 90 L270 190 L390 60 L540 200 L650 120 L800 220 L800 330Z" fill="#4E7A5A"/><path d="M160 90 L200 120 L130 112Z M390 60 L430 95 L355 92Z" fill="#fff"/><path d="M0 330 L0 270 L300 240 L800 285 L800 330Z" fill="#35583F"/>')},
+ {title:'Športni dan za dijake 3.Ma, 3.Mb, 3.Eb, 3.Ea, 3.Ee, 3.Me',date:'2026-09-18T09:48:03+02:00',
+  text:'Četrtek, 24. 9. 2026, Mega Center Kranj. Prva skupina se zbere ob 7.40, druga ob 10.40 v recepciji fitnesa. Potrebna je primerna športna oprema.'},
+ {title:'Jesenska šola fizike',date:'2026-09-15T08:40:32+02:00',
+  text:'Dijakinje in dijaki vseh letnikov, ki vas zanima fizika, raziskovanje in eksperimentalno delo, se lahko prijavite na Jesensko šolo fizike, ki bo oktobra potekala na Fakulteti za matematiko in fiziko.'},
+ {title:'Balkan Express 2026',date:'2026-09-15T08:28:02+02:00',
+  text:'Dijaki 4.MA in 4.MB bodo od 28. 9. do 2. 10. 2026 na strokovni ekskurziji Balkan Express 2026.'}
+];
+
+// Ready for later: turn the Joomla RSS text into the objects above.
+// (Fetch it through your own backend; sckr.si won't allow a direct browser fetch.)
+function parseRSS(xmlText){
+ const doc=new DOMParser().parseFromString(xmlText,'text/xml');
+ return [...doc.querySelectorAll('item')].map(it=>{
+  const html=new DOMParser().parseFromString(it.querySelector('description')?.textContent||'','text/html');
+  const img=[...html.querySelectorAll('img')].find(i=>!i.classList.contains('wf_file_icon'));
+  const text=[...html.querySelectorAll('p')].map(p=>p.textContent.replace(/\u00a0/g,' ').trim()).filter(Boolean).join(' ');
+  return {title:it.querySelector('title').textContent.trim(),date:it.querySelector('pubDate').textContent,
+   text:text.length>260?text.slice(0,260).replace(/\s\S*$/,'')+' …':text,img:img?img.getAttribute('src'):null};
+ });
+}
+
+function when(d){d=new Date(d);const t=new Date();t.setHours(0,0,0,0);
+ const diff=Math.round((t-new Date(d).setHours(0,0,0,0))/864e5);
+ return diff===0?'danes':diff===1?'včeraj':d.toLocaleDateString('sl-SI',{day:'numeric',month:'long'})}
+
+let ni=0;const feat=document.getElementById('feat'),dots=document.getElementById('dots');
+dots.innerHTML=news.map(()=>'<span></span>').join('');
+function showNews(){const n=news[ni];
+ feat.className='feat'+(n.img?' img':'');
+ feat.innerHTML=`${n.img?`<div class="pic" style="background-image:url('${n.img}')"></div>`:''}<div class="src"><b>STŠ</b>${when(n.date)}</div><h2>${n.title}</h2><p>${n.text}</p><div class="next">${[1,2].map(k=>news[(ni+k)%news.length]).map(x=>`<div>${when(x.date)}<b>${x.title}</b></div>`).join('')}</div><div class="bar" id="bar"></div>`;
+ void feat.offsetWidth;feat.classList.add('swap');
+ [...dots.children].forEach((d,i)=>d.classList.toggle('on',i===ni));
+ document.getElementById('bar').animate([{width:'0%'},{width:'100%'}],{duration:10000,easing:'linear',fill:'forwards'});
+ ni=(ni+1)%news.length;}
+showNews();setInterval(showNews,10000);
+
+/* ---------- substitutions (hardcoded, grouped by class) ---------- */
+// type: 'sub' = nadomeščanje, 'off' = odpade, 'room' = menjava učilnice
+const subs=[
+ {cls:'1.Ra',rows:[{h:3,s:'Matematika',abs:'Novak',by:'Kovač',room:'214',type:'sub'},{h:4,s:'Matematika',abs:'Novak',by:'Kovač',room:'214',type:'sub'}]},
+ {cls:'1.Rb',rows:[{h:6,s:'Angleščina',abs:'Zupan',type:'off'}]},
+ {cls:'2.Ra',rows:[{h:1,s:'Programiranje',abs:'Horvat',by:'Colarič',room:'MladLab',type:'sub'},{h:2,s:'Programiranje',room:'MladLab',type:'room'}]},
+ {cls:'2.Eb',rows:[{h:5,s:'Fizika',abs:'Krajnc',by:'Potočnik',room:'108',type:'sub'}]},
+ {cls:'3.Ra',rows:[{h:2,s:'RPS',abs:'Colarič',by:'Horvat',room:'RAČ 3',type:'sub'},{h:3,s:'Slovenščina',room:'201',type:'room'},{h:7,s:'Športna vzgoja',abs:'Mlakar',type:'off'}]},
+ {cls:'3.Mb',rows:[{h:4,s:'Zgodovina',abs:'Vidmar',by:'Kos',room:'115',type:'sub'}]},
+ {cls:'4.Ra',rows:[{h:5,s:'UPN',abs:'Golob',by:'Colarič',room:'RAČ 2',type:'sub'},{h:6,s:'UPN',abs:'Golob',by:'Colarič',room:'RAČ 2',type:'sub'}]},
+ {cls:'4.Ea',rows:[{h:8,s:'Matematika',abs:'Novak',type:'off'}]},
+ {cls:'4.Rb',rows:[{h:1,s:'Nemščina',abs:'Turk',by:'Zupan',room:'302',type:'sub'}]}
+];
+const rowHTML=r=>{
+ const tag=r.type==='off'?'<span class="tag">Odpade</span>':r.type==='room'?'<span class="tag">Nova učilnica</span>':'';
+ const who=r.type==='sub'?`${r.abs} <span>→</span> <em>${r.by}</em>`:r.type==='off'?`${r.abs}, ura odpade`:'Pouk poteka v drugi učilnici';
+ return `<div class="row ${r.type==='off'?'off':r.type==='room'?'room-ch':''}"><div class="h">${r.h}.</div>
+  <div class="line"><span class="subj">${r.s}</span>${tag}<span class="who">${who}</span></div><div class="room">${r.room||''}</div></div>`};
+const DUR=7000;let ci=0;
+const cols=document.getElementById('cols'),chips=document.getElementById('chips');
+chips.style.setProperty('--dur',DUR+'ms');
+const maxRows=Math.max(1,...subs.map(c=>c.rows.length));cols.style.height=(maxRows*57)+'px';
+chips.innerHTML=subs.map(c=>`<span>${c.cls}</span>`).join('');
+const nSp=n=>n===1?'sprememba':n===2?'spremembi':n<5?'spremembe':'sprememb';
+function showSubs(){
+ if(!subs.length){cols.innerHTML='<p style="font-size:30px;color:var(--muted)">Danes ni nadomeščanj.</p>';return}
+ const c=subs[ci];
+ cols.innerHTML=`<div class="cls"><div class="cls-h"><b>${c.cls}</b><span>${c.rows.length} ${nSp(c.rows.length)}</span></div><div>${c.rows.map(rowHTML).join('')}</div></div>`;
+ cols.classList.remove('swap');void cols.offsetWidth;cols.classList.add('swap');
+ [...chips.children].forEach((el,i)=>{el.classList.remove('on');if(i===ci){void el.offsetWidth;el.classList.add('on')}});
+ ci=(ci+1)%subs.length;}
+showSubs();setInterval(showSubs,DUR);
+
+/* ---------- footer placeholder ---------- */
+document.getElementById('fact').textContent='Prvi računalniški "hrošč" je bil pravi molj, ki se je leta 1947 ujel v rele računalnika Harvard Mark II.';
+</script>
+</body>
+</html>

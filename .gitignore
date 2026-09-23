@@ -1,0 +1,14 @@
+# Local test copy of the eAsistent page: contains teacher names, never publish it
+example.html
+
+# Build output (upload package for Yodeck HTML App), regenerate when needed
+*.zip
+
+# Editor / tool settings
+.vscode/
+.claude/
+
+# OS clutter
+Thumbs.db
+desktop.ini
+.DS_Store
