@@ -99,6 +99,9 @@ html,body{height:100%;background:#000;overflow:hidden}
 .logo svg{display:block;height:100%;width:auto;max-width:200px}
 @media (prefers-reduced-motion:reduce){.logo{transition:none}}
 .feat>*{flex-shrink:0}
+/* a bit more air between news headline and description */
+.feat h2{margin-bottom:30px}
+.feat.img h2{margin-bottom:18px;line-height:1.14} /* taller lines: the 2-line clamp no longer cuts j/p/g descenders */
 /* small seconds next to the clock, current lesson line under the date */
 .clock{font-variant-numeric:tabular-nums}
 .top{column-gap:24px}
