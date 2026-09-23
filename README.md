@@ -103,7 +103,7 @@ index.html?logoColors=FFFFFF,F5B700,6FA8FF
 | `generalMax` | Max. RTV items per pass through the news (each pass shows a new batch) |
 | `subsDate` | `YYYY-MM-DD`: show substitutions for that day instead of today (testing) |
 | `themes` | Seasonal themes by date (see below) |
-| `theme` | Force a theme (`halloween`) or `off`; empty = by date |
+| `theme` | Force a theme (e.g. `christmas`) or `off`; empty = by date |
 
 ### Offline test of the substitutions
 
@@ -197,22 +197,33 @@ A theme adds a colour accent and a few small animated shapes on a transparent la
 above the screen. Only transform and opacity animate, so it stays smooth on a small
 player. On screens set to reduced motion, the colours change but nothing moves.
 
-| Theme | Accent | Shapes |
+| Theme | Default dates | What happens |
 |---|---|---|
-| `halloween` (Noč čarovnic) | yellow accents turn orange, orange/purple logo | bats fly across, small ghosts rise along the edges, a spider lowers itself from the top of the news |
+| `winter` Zima | 12-01 → 12-19 | red accents, snow falls, twinkling lights under the header |
+| `christmas` Božič in novo leto | 12-20 → 01-02 | snow, lights, gold stars, greeting banner |
+| `pust` Pust | pust-4 → pust | purple accents, confetti, carnival masks and balloons, banner |
+| `presern` Prešernov dan | 02-06 → 02-08 | gold stars, verse banner from Zdravljica |
+| `valentine` Valentinovo | 02-13 → 02-14 | pink accents, hearts float up, banner |
+| `april` Prvi april | 04-01 | logo upside down, parts of the screen wobble now and then |
+| `easter` Velika noč | easter-6 → easter+1 | pastel accents, eggs peek in from the edges, a bunny hops across, banner |
+| `summer` Zadnji šolski dan | 06-23 → 06-24 | beach balls bounce, confetti, "Lepe počitnice!" |
+| `welcome` Prvi šolski dan | 09-01 | balloons, confetti, "Dobrodošli v novem šolskem letu!" |
+| `halloween` Noč čarovnic | 10-19 → 10-31 | orange accents, bats, ghosts along the edges, a spider on a thread |
 
-- **By date:** `themes` in `config.js` lists when each theme is on (`MM-DD`, inclusive;
-  a range may wrap over New Year):
+- **By date:** `themes` in `config.js` lists when each theme is on. Dates are `MM-DD`
+  (inclusive, a range may wrap over New Year) or relative to the moving feasts:
+  `easter±N` and `pust±N` (pust = Shrove Tuesday, 47 days before Easter). The screen
+  calculates Easter itself, so these need no yearly update. The first matching entry wins.
   ```js
-  themes: [ { name: "halloween", from: "10-19", to: "10-31" } ],
+  { name: "easter", from: "easter-6", to: "easter+1" },
   ```
 - **By hand:** tap "ŠC KRANJ". Each tap cycles samodejno → each theme → izklopljeno. A
   short label under the name shows the choice. After `manualModeMinutes` it returns to
   samodejno.
 - **Testing:** `index.html?theme=halloween` forces a theme, `?theme=off` turns them off.
 
-New themes (e.g. snow in December, hearts on Valentine's Day) use the same engine: one
-entry in `THEMES` and `SPRITES` in `index.html`, plus a date range in `config.js`.
+A new theme uses the same engine: one entry in `THEMES` (and any new shape in `SPRITES`)
+in `index.html`, plus a date range in `config.js`.
 
 ## How the data is loaded
 

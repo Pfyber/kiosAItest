@@ -44,11 +44,22 @@ window.CONFIG = {
   ],
   lessonsFrom: "6:00",  // show "1. ura čez …" from this time in the morning
 
-  /* Seasonal themes (colour accent + a few animated shapes). Shown automatically from
-     "from" to "to" (MM-DD, inclusive; a range may wrap over New Year). A tap on "ŠC KRANJ"
-     cycles through them by hand. Available: "halloween". */
+  /* Seasonal themes (colour accent, decoration and a few animated shapes). Shown automatically
+     from "from" to "to", inclusive. Dates: "MM-DD", or relative to the moving feasts
+     "easter±N" / "pust±N" (pust = Shrove Tuesday). A range may wrap over New Year.
+     The first matching entry wins. A tap on "ŠC KRANJ" cycles through all themes by hand.
+     Available: winter, christmas, presern, valentine, pust, april, easter, summer, welcome, halloween. */
   themes: [
-    { name: "halloween", from: "10-19", to: "10-31" }   // school week before the autumn break
+    { name: "winter",    from: "12-01",    to: "12-19" },    // snow + lights
+    { name: "christmas", from: "12-20",    to: "01-02" },    // snow, lights, greeting
+    { name: "pust",      from: "pust-4",   to: "pust" },     // Friday before → Shrove Tuesday
+    { name: "presern",   from: "02-06",    to: "02-08" },    // Prešernov dan
+    { name: "valentine", from: "02-13",    to: "02-14" },
+    { name: "april",     from: "04-01",    to: "04-01" },    // April Fools' Day
+    { name: "easter",    from: "easter-6", to: "easter+1" }, // week before → Easter Monday
+    { name: "summer",    from: "06-23",    to: "06-24" },    // last school days
+    { name: "welcome",   from: "09-01",    to: "09-01" },    // first school day
+    { name: "halloween", from: "10-19",    to: "10-31" }     // school week before the autumn break
   ],
   theme: "",            // force a theme for testing ("halloween"), or "off"; "" = by date
 

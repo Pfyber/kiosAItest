@@ -116,6 +116,14 @@ html,body{height:100%;background:#000;overflow:hidden}
 @keyframes fx-flap{to{transform:scaleY(.35)}}
 .fx-ghost svg{filter:drop-shadow(0 3px 5px rgba(16,38,74,.25))}
 .fx-thread{position:absolute;left:18px;top:0;width:2px;height:0;background:#2B1B3F;opacity:.55}
+.fx-banner{position:absolute;z-index:5;top:370px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--signal);color:var(--navy);
+  font-family:var(--cond);font-weight:800;font-size:30px;padding:6px 26px;border-radius:30px;box-shadow:0 6px 18px rgba(16,38,74,.25);animation:fx-pop .7s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes fx-pop{from{transform:translateX(-50%) scale(.3);opacity:0}}
+.fx-lights{position:absolute;left:0;top:0;width:1080px;height:430px}
+.fx-bulb{animation:fx-twinkle 1.8s ease-in-out infinite alternate}
+@keyframes fx-twinkle{from{opacity:.35}}
+.t-april .logo svg{transform:rotate(180deg);transition:transform 1.5s ease}
+@media (prefers-reduced-motion:reduce){.fx-bulb,.fx-banner{animation:none}}
 /* weather: icon right next to the temperature, description on its own line below;
    everything shares the right edge with the school name */
 .now{justify-self:end;display:grid;grid-template-columns:auto auto;justify-content:end;align-items:center;column-gap:12px}
@@ -782,81 +790,158 @@ function showFact(){
 loadFacts();setInterval(showFact,30000);
 
 /* ---------- seasonal themes ----------
-   One engine for all themes. A theme = colour accent + a few animated sprites on a
-   transparent layer (#fx) above the screen. Active automatically between the dates in
-   CONFIG.themes, or picked by hand: a tap on "ŠC KRANJ" cycles
-   samodejno → each theme → izklopljeno (back to samodejno after manualModeMinutes).
-   Add a theme: an entry in THEMES (label, vars, logo, sprites) + dates in config.js. */
-const SPRITES={
- bat:`<svg viewBox="0 0 64 32"><g class="w" fill="#2B1B3F"><path d="M30 14C24 6 12 4 2 10c6 2 8 6 8 10 4-3 8-2 10 1 2-4 6-4 10-2z"/><path d="M34 14c6-8 18-10 28-4-6 2-8 6-8 10-4-3-8-2-10 1-2-4-6-4-10-2z"/></g><path fill="#2B1B3F" d="M29 10l1-5 2 4 2-4 1 5v8a3 3 0 0 1-6 0z"/><circle cx="30.6" cy="11.5" r=".9" fill="#FF8A1F"/><circle cx="33.4" cy="11.5" r=".9" fill="#FF8A1F"/></svg>`,
- ghost:`<svg viewBox="0 0 40 48"><path d="M20 2C10 2 4 10 4 20v24l6-4 5 5 5-5 5 5 5-5 6 4V20C36 10 30 2 20 2z" fill="#fff" stroke="#B9C3D3" stroke-width="1.5"/><ellipse cx="15" cy="19" rx="2.6" ry="3.4" fill="#2B1B3F"/><ellipse cx="25" cy="19" rx="2.6" ry="3.4" fill="#2B1B3F"/><ellipse cx="20" cy="28" rx="2.4" ry="3" fill="#2B1B3F"/></svg>`,
- spider:`<svg viewBox="0 0 40 36"><g stroke="#2B1B3F" stroke-width="2.2" stroke-linecap="round" fill="none"><path d="M14 16 4 8M14 19 2 18M14 22 4 30M16 24l-6 10M26 16l10-8M26 19l12-1M26 22l10 8M24 24l6 10"/></g><ellipse cx="20" cy="20" rx="8" ry="9" fill="#2B1B3F"/><circle cx="17" cy="17" r="1.6" fill="#FF8A1F"/><circle cx="23" cy="17" r="1.6" fill="#FF8A1F"/></svg>`
-};
-const THEMES={
- halloween:{label:'Noč čarovnic',
-  vars:{'--signal':'#FF8A1F'},                        // yellow accents turn pumpkin orange
-  logo:['#FF8A1F','#B67BFF','#FFFFFF','#FFB347'],
-  sprites:[{s:'bat',max:4,every:[3,8]},{s:'ghost',max:2,every:[8,18]},{s:'spider',max:1,every:[15,35]}]}
-};
-const fxEl=document.getElementById('fx'),themeToast=document.getElementById('themeToast');
+   One engine for every theme. A theme = colour accent (CSS variables + logo palette),
+   optional decoration (banner, lights, CSS class) and a few animated sprites on the
+   transparent layer #fx. Sprites move with Web Animations (transform + opacity only).
+   Active automatically by the dates in CONFIG.themes, or picked by hand: a tap on
+   "ŠC KRANJ" cycles samodejno → every theme → izklopljeno (back to samodejno after
+   manualModeMinutes). New theme = an entry in THEMES (+ sprites) and dates in config.js. */
+const pick=a=>a[Math.floor(Math.random()*a.length)];
 const rnd=(a,b)=>a+Math.random()*(b-a);
+const INK='#2B1B3F';
+// Sprites: SVG strings; functions get a random colour from the spawn spec's palette.
+const SPRITES={
+ bat:()=>`<svg viewBox="0 0 64 32"><g class="w" fill="${INK}"><path d="M30 14C24 6 12 4 2 10c6 2 8 6 8 10 4-3 8-2 10 1 2-4 6-4 10-2z"/><path d="M34 14c6-8 18-10 28-4-6 2-8 6-8 10-4-3-8-2-10 1-2-4-6-4-10-2z"/></g><path fill="${INK}" d="M29 10l1-5 2 4 2-4 1 5v8a3 3 0 0 1-6 0z"/><circle cx="30.6" cy="11.5" r=".9" fill="#FF8A1F"/><circle cx="33.4" cy="11.5" r=".9" fill="#FF8A1F"/></svg>`,
+ ghost:()=>`<svg viewBox="0 0 40 48"><path d="M20 2C10 2 4 10 4 20v24l6-4 5 5 5-5 5 5 5-5 6 4V20C36 10 30 2 20 2z" fill="#fff" stroke="#B9C3D3" stroke-width="1.5"/><ellipse cx="15" cy="19" rx="2.6" ry="3.4" fill="${INK}"/><ellipse cx="25" cy="19" rx="2.6" ry="3.4" fill="${INK}"/><ellipse cx="20" cy="28" rx="2.4" ry="3" fill="${INK}"/></svg>`,
+ spider:()=>`<svg viewBox="0 0 40 36"><g stroke="${INK}" stroke-width="2.2" stroke-linecap="round" fill="none"><path d="M14 16 4 8M14 19 2 18M14 22 4 30M16 24l-6 10M26 16l10-8M26 19l12-1M26 22l10 8M24 24l6 10"/></g><ellipse cx="20" cy="20" rx="8" ry="9" fill="${INK}"/><circle cx="17" cy="17" r="1.6" fill="#FF8A1F"/><circle cx="23" cy="17" r="1.6" fill="#FF8A1F"/></svg>`,
+ snow:()=>Math.random()<.6
+  ?`<svg viewBox="0 0 40 40"><g stroke-linecap="round" fill="none"><path d="M20 3v34M5.3 11.5l29.4 17M5.3 28.5l29.4-17M20 9l-4-4M20 9l4-4M20 31l-4 4M20 31l4 4" stroke="#9DB8DE" stroke-width="5"/><path d="M20 3v34M5.3 11.5l29.4 17M5.3 28.5l29.4-17M20 9l-4-4M20 9l4-4M20 31l-4 4M20 31l4 4" stroke="#fff" stroke-width="2.4"/></g></svg>`
+  :`<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="#fff" stroke="#9DB8DE" stroke-width="2"/></svg>`,
+ heart:c=>`<svg viewBox="0 0 40 36"><path d="M20 34S3 23 3 12A8.5 8.5 0 0 1 20 8a8.5 8.5 0 0 1 17 4c0 11-17 22-17 22z" fill="${c}" stroke="#fff" stroke-width="2"/><ellipse cx="11" cy="13" rx="3.2" ry="2" fill="#fff" opacity=".55"/></svg>`,
+ confetti:c=>Math.random()<.7?`<svg viewBox="0 0 10 16"><rect width="10" height="16" rx="2" fill="${c}"/></svg>`:`<svg viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="${c}"/></svg>`,
+ balloon:c=>`<svg viewBox="0 0 40 72"><path d="M20 2C9 2 3 11 3 21c0 12 9 21 17 23 8-2 17-11 17-23C37 11 31 2 20 2z" fill="${c}"/><path d="M17 44h6l-3 4z" fill="${c}"/><path d="M20 48c-3 6 3 10 0 22" stroke="#8A97AB" stroke-width="1.5" fill="none"/><ellipse cx="13" cy="14" rx="3.5" ry="6" fill="#fff" opacity=".35"/></svg>`,
+ mask:c=>`<svg viewBox="0 0 64 34"><path d="M4 8c10-4 20-2 28 4 8-6 18-8 28-4 2 12-4 22-14 22-7 0-11-5-14-9-3 4-7 9-14 9C8 30 2 20 4 8z" fill="${c}" stroke="#fff" stroke-width="1.5"/><ellipse cx="18" cy="16" rx="6" ry="4" fill="#10264A"/><ellipse cx="46" cy="16" rx="6" ry="4" fill="#10264A"/><path d="M9 8 5 1M55 8l4-7" stroke="#F5B700" stroke-width="3" stroke-linecap="round"/></svg>`,
+ egg:c=>`<svg viewBox="0 0 40 50"><path d="M20 2C10 2 3 18 3 30a17 17 0 0 0 34 0C37 18 30 2 20 2z" fill="${c}" stroke="#fff" stroke-width="1.5"/><path d="M5 26q7-5 15 0t15 0" stroke="#fff" stroke-width="3" fill="none"/><path d="M4 35q8 4 16 0t16 0" stroke="#fff" stroke-width="2" fill="none" opacity=".7"/><circle cx="14" cy="16" r="2" fill="#fff"/><circle cx="25" cy="13" r="2" fill="#fff"/></svg>`,
+ bunny:()=>`<svg viewBox="0 0 60 70"><g fill="#fff" stroke="#C9D4E3" stroke-width="2"><ellipse cx="20" cy="18" rx="7" ry="17"/><ellipse cx="40" cy="18" rx="7" ry="17"/><circle cx="30" cy="46" r="20"/></g><ellipse cx="20" cy="18" rx="3" ry="11" fill="#FFB3C7"/><ellipse cx="40" cy="18" rx="3" ry="11" fill="#FFB3C7"/><circle cx="23" cy="43" r="2.6" fill="${INK}"/><circle cx="37" cy="43" r="2.6" fill="${INK}"/><ellipse cx="30" cy="50" rx="3" ry="2.2" fill="#FF8FB1"/><path d="M30 52v3M26 56q4 3 8 0" stroke="${INK}" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>`,
+ ball:()=>`<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#fff" stroke="#10264A" stroke-opacity=".2"/><path d="M20 2a18 18 0 0 1 16 10L20 20z" fill="#FF5C5C"/><path d="M36 12a18 18 0 0 1-2 20L20 20z" fill="#F5B700"/><path d="M34 32a18 18 0 0 1-18 6L20 20z" fill="#2B6CD9"/><path d="M16 38A18 18 0 0 1 3 26l17-6z" fill="#7ED3A4"/><path d="M3 26A18 18 0 0 1 8 7l12 13z" fill="#FF8A1F"/><circle cx="20" cy="20" r="3.5" fill="#fff"/></svg>`,
+ star:()=>`<svg viewBox="0 0 40 40"><path d="M20 2l5 12 13 1-10 8 3 13-11-7-11 7 3-13-10-8 13-1z" fill="#F5B700" stroke="#fff" stroke-width="1.5"/></svg>`
+};
+const PARTY=['#FF5C8A','#F5B700','#2B6CD9','#7ED3A4','#B67BFF','#FF8A1F'];
+const THEMES={
+ winter:{label:'Zima',vars:{'--signal':'#E0463C'},logo:['#FFFFFF','#E0463C','#3FA36B','#F5B700'],lights:true,
+  sprites:[{s:'snow',move:'fall',max:22,every:[.4,1.2],size:[16,34],dur:[12,20],burst:10}]},
+ christmas:{label:'Božič in novo leto',vars:{'--signal':'#E0463C'},logo:['#FFFFFF','#E0463C','#3FA36B','#F5B700'],lights:true,
+  banner:'Vesele praznike in srečno novo leto!',
+  sprites:[{s:'snow',move:'fall',max:26,every:[.3,1],size:[16,36],dur:[12,20],burst:12},{s:'star',move:'fall',max:3,every:[6,12],size:[20,30],dur:[16,22],spin:true}]},
+ valentine:{label:'Valentinovo',vars:{'--signal':'#FF5C8A'},logo:['#FFFFFF','#FF5C8A','#FF8FB1','#FFC2D4'],
+  banner:'Srečno valentinovo! ♥',
+  sprites:[{s:'heart',move:'rise',max:10,every:[1,3],size:[26,56],dur:[10,16],colors:['#FF5C8A','#FF8FB1','#E8336D','#FFB3C7'],burst:4}]},
+ presern:{label:'Prešernov dan',logo:['#FFFFFF','#F5B700'],
+  banner:'8. februar – Prešernov dan · »Žive naj vsi narodi …«',
+  sprites:[{s:'star',move:'fall',max:6,every:[3,7],size:[18,30],dur:[18,26],spin:true,burst:2}]},
+ pust:{label:'Pust',vars:{'--signal':'#B67BFF'},logo:PARTY,banner:'Pustni čas! Kdo se je danes našemil?',
+  sprites:[{s:'confetti',move:'fall',max:30,every:[.2,.7],size:[10,18],dur:[8,13],spin:true,colors:PARTY,burst:14},
+   {s:'mask',move:'rise',max:3,every:[5,10],size:[70,100],dur:[12,16],colors:['#B67BFF','#FF5C8A','#2B6CD9','#3FA36B']},
+   {s:'balloon',move:'rise',max:3,every:[6,12],size:[40,60],dur:[14,20],colors:PARTY}]},
+ april:{label:'Prvi april',cls:'t-april',
+  sprites:[{fn:wobble,max:1,every:[40,90]}]},
+ easter:{label:'Velika noč',vars:{'--signal':'#7ED3A4'},logo:['#FFFFFF','#FFD166','#7ED3A4','#FF8FB1','#9DB8FF'],
+  banner:'Vesele velikonočne praznike!',
+  sprites:[{s:'egg',move:'peek',max:3,every:[3,7],size:[46,64],colors:['#FF8FB1','#FFD166','#7ED3A4','#9DB8FF','#C9A7FF']},
+   {s:'bunny',move:'hop',max:1,every:[18,35],size:[70,90],dur:[14,18]}]},
+ welcome:{label:'Prvi šolski dan',logo:PARTY,banner:'Dobrodošli v novem šolskem letu!',
+  sprites:[{s:'balloon',move:'rise',max:8,every:[1.5,4],size:[44,68],dur:[12,18],colors:PARTY,burst:4},
+   {s:'confetti',move:'fall',max:20,every:[.4,1.2],size:[10,18],dur:[8,13],spin:true,colors:PARTY,burst:10}]},
+ summer:{label:'Zadnji šolski dan',vars:{'--signal':'#FFB000'},logo:PARTY,banner:'Lepe počitnice! ☀',
+  sprites:[{s:'ball',move:'hop',max:2,every:[6,12],size:[56,80],dur:[10,14],spin:true},
+   {s:'confetti',move:'fall',max:20,every:[.4,1.2],size:[10,18],dur:[8,13],spin:true,colors:PARTY,burst:10}]},
+ halloween:{label:'Noč čarovnic',vars:{'--signal':'#FF8A1F'},logo:['#FF8A1F','#B67BFF','#FFFFFF','#FFB347'],
+  sprites:[{s:'bat',move:'fly',max:4,every:[3,8],size:[54,84]},{s:'ghost',move:'edge',max:2,every:[8,18],size:[46,64]},
+   {s:'spider',move:'drop',max:1,every:[15,35]}]}
+};
+
+/* Motion paths. Stage is 1080×1920; all return the Animation that ends the sprite. */
+const sway=(x,a,i)=>x+(i%2?a:-a);
+const MOVE={
+ fall(el,o){ // drift down from above the screen, swaying (snow, confetti, stars)
+  const w=rnd(...o.size),x=rnd(0,1080-w),a=rnd(20,60),r=o.spin?rnd(180,720)*(Math.random()<.5?-1:1):0;el.style.width=w+'px';
+  return el.animate([0,.25,.5,.75,1].map((p,i)=>({transform:`translate(${sway(x,a*p,i)}px,${-80+2060*p}px) rotate(${r*p}deg)`,opacity:p>.9?0:.95})),{duration:rnd(...o.dur)*1000,easing:'linear'})},
+ rise(el,o){ // float up from below, swaying, fading at the top (hearts, balloons, masks)
+  const w=rnd(...o.size),x=rnd(20,1060-w),a=rnd(20,50);el.style.width=w+'px';
+  return el.animate([0,.25,.5,.75,1].map((p,i)=>({transform:`translate(${sway(x,a*p,i)}px,${1960-2100*p}px) rotate(${(i%2?6:-6)*p}deg)`,opacity:p<.1?p*9:p>.85?(1-p)*6:.9})),{duration:rnd(...o.dur)*1000,easing:'ease-in-out'})},
+ fly(el,o){ // across the screen in a gentle wave (bats)
+  const w=rnd(...o.size),ltr=Math.random()<.5,y=rnd(430,1450),x0=ltr?-w-20:1100,x1=ltr?1100:-w-20,a=rnd(30,90);el.style.width=w+'px';
+  return el.animate([0,.25,.5,.75,1].map((p,i)=>({transform:`translate(${x0+(x1-x0)*p}px,${y+(i&&i<4?(i%2?-a:a):0)}px) rotate(${ltr?8:-8}deg)`})),{duration:rnd(8000,13000),easing:'ease-in-out'})},
+ edge(el,o){ // rise slowly along a side margin, fading in and out (ghosts)
+  const w=rnd(...o.size),x=Math.random()<.5?rnd(4,40):rnd(1036-w,1076-w),y0=rnd(1300,1700),y1=y0-rnd(420,700);el.style.width=w+'px';
+  return el.animate([{transform:`translate(${x}px,${y0}px)`,opacity:0},{transform:`translate(${x+14}px,${(y0*2+y1)/3}px)`,opacity:.85,offset:.25},
+   {transform:`translate(${x-14}px,${(y0+y1*2)/3}px)`,opacity:.85,offset:.75},{transform:`translate(${x}px,${y1}px)`,opacity:0}],{duration:rnd(12000,17000),easing:'ease-in-out'})},
+ drop(el){ // let down on a thread from the top of the news, pause, climb back (spider)
+  const x=rnd(120,960),d=rnd(110,220),o={duration:9000,easing:'ease-in-out'},f=[[0,0],[.35,d],[.65,d],[1,0]];
+  el.style.width='38px';el.style.transform=`translate(${x}px,400px)`;el.insertAdjacentHTML('afterbegin','<i class="fx-thread"></i>');
+  el.firstChild.animate(f.map(([t,v])=>({offset:t,height:v+'px'})),o);
+  return el.lastElementChild.animate(f.map(([t,v])=>({offset:t,transform:`translateY(${v}px)`})),o)},
+ peek(el,o){ // slide in from a side edge, look around, slide back (eggs)
+  const w=rnd(...o.size),left=Math.random()<.5,y=rnd(460,1600),rot=left?90:-90,hid=left?-w-10:1090,out=left?-w*.35:1080-w*.65;el.style.width=w+'px';
+  return el.animate([{transform:`translate(${hid}px,${y}px) rotate(${rot}deg)`},{transform:`translate(${out}px,${y}px) rotate(${rot-12}deg)`,offset:.2},
+   {transform:`translate(${out}px,${y}px) rotate(${rot+12}deg)`,offset:.5},{transform:`translate(${out}px,${y}px) rotate(${rot-8}deg)`,offset:.8},{transform:`translate(${hid}px,${y}px) rotate(${rot}deg)`}],{duration:rnd(5000,7000),easing:'ease-in-out'})},
+ hop(el,o){ // bounce across the lower half of the screen (bunny, beach balls)
+  const w=rnd(...o.size),ltr=Math.random()<.5,base=rnd(1350,1650)-w,h=rnd(90,170),n=6,x0=ltr?-w-20:1100,x1=ltr?1100:-w-20,r=o.spin?(ltr?540:-540):0,k=[];
+  for(let i=0;i<=n*2;i++){const p=i/(n*2);k.push({transform:`translate(${x0+(x1-x0)*p}px,${base-(i%2?h:0)}px) rotate(${r*p}deg) scaleX(${ltr?1:-1})`,easing:i%2?'ease-in':'ease-out'})}
+  el.style.width=w+'px';return el.animate(k,{duration:rnd(...o.dur)*1000})}
+};
+// 1 April: now and then one part of the screen wobbles like jelly (no sprite).
+function wobble(){const t=pick(['.clock','#feat','#cols','.foot','.logo']),el=document.querySelector(t);if(!el)return;
+ el.animate([{transform:'none'},{transform:'rotate(-2deg) scale(1.03)'},{transform:'rotate(2deg) scale(.98)'},{transform:'rotate(-1deg)'},{transform:'none'}],{duration:1400,easing:'ease-in-out'})}
+
+const fxEl=document.getElementById('fx'),themeToast=document.getElementById('themeToast');
 let curTheme=null,fxTimers=[],forcedTheme=null,forcedThemeTimer,toastTimer;
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-// Motion paths (Web Animations; only transform + opacity, so it stays smooth on a small player).
-function flyBat(el){ // across the screen in a gentle wave, wings flapping (CSS)
- const w=rnd(54,84),ltr=Math.random()<.5,y=rnd(430,1450),x0=ltr?-w-20:1100,x1=ltr?1100:-w-20,amp=rnd(30,90);
- el.style.width=w+'px';
- const k=[0,.25,.5,.75,1].map((p,i)=>({transform:`translate(${x0+(x1-x0)*p}px,${y+(i%2?-amp:amp)*(i&&i<4?1:0)}px) rotate(${ltr?8:-8}deg)`}));
- return el.animate(k,{duration:rnd(8000,13000),easing:'ease-in-out'});
-}
-function floatGhost(el){ // rises slowly along a side margin, fades in and out
- const w=rnd(46,64),left=Math.random()<.5,x=left?rnd(4,40):rnd(1080-w-40,1080-w-4),y0=rnd(1300,1700),y1=y0-rnd(420,700);
- el.style.width=w+'px';
- return el.animate([{transform:`translate(${x}px,${y0}px)`,opacity:0},{transform:`translate(${x+14}px,${(y0*2+y1)/3}px)`,opacity:.85,offset:.25},
-  {transform:`translate(${x-14}px,${(y0+y1*2)/3}px)`,opacity:.85,offset:.75},{transform:`translate(${x}px,${y1}px)`,opacity:0}],{duration:rnd(12000,17000),easing:'ease-in-out'});
-}
-function dropSpider(el){ // lets itself down on a thread from the top of the news, then climbs back
- const x=rnd(120,960),top=400,d=rnd(110,220);
- el.style.width='38px';el.style.transform=`translate(${x}px,${top}px)`;
- el.insertAdjacentHTML('afterbegin','<i class="fx-thread"></i>');
- const th=el.firstChild,sp=el.lastElementChild,o={duration:9000,easing:'ease-in-out'};
- const f=[{offset:0,v:0},{offset:.35,v:d},{offset:.65,v:d},{offset:1,v:0}];
- th.animate(f.map(k=>({offset:k.offset,height:k.v+'px'})),o);
- return sp.animate(f.map(k=>({offset:k.offset,transform:`translateY(${k.v}px)`})),o);
-}
-const MOVE={bat:flyBat,ghost:floatGhost,spider:dropSpider};
-
 function spawn(t,spec){
+ if(spec.fn){spec.fn();return}
  if(fxEl.querySelectorAll(`.fx-${spec.s}`).length>=spec.max)return;
  const el=document.createElement('div');el.className=`fx-p fx-${spec.s}`;
- el.innerHTML=`<div class="fx-sprite">${SPRITES[spec.s]}</div>`;fxEl.appendChild(el);
- const a=MOVE[spec.s](el);a.onfinish=()=>el.remove();
+ el.innerHTML=`<div class="fx-sprite">${SPRITES[spec.s](spec.colors?pick(spec.colors):'')}</div>`;fxEl.appendChild(el);
+ MOVE[spec.move](el,spec).onfinish=()=>el.remove();
 }
 function schedule(t,spec){ // keep spawning at random intervals while this theme is on
- const id=setTimeout(()=>{if(curTheme!==t)return;spawn(t,spec);schedule(t,spec)},rnd(spec.every[0],spec.every[1])*1000);
- fxTimers.push(id);
+ fxTimers.push(setTimeout(()=>{if(curTheme!==t)return;spawn(t,spec);schedule(t,spec)},rnd(spec.every[0],spec.every[1])*1000));
+}
+function decorate(t){ // static decoration: banner + string of lights under the header
+ if(t.lights){const c=['#E0463C','#F5B700','#3FA36B','#6FA8FF'];let wire='M0 396',b='';
+  for(let i=0;i<24;i++){const x=22+i*45.5,y=i%2?412:404;wire+=` Q${x-12} ${y+2} ${x} ${y-8}`;
+   b+=`<circle class="fx-bulb" cx="${x}" cy="${y}" r="7" fill="${c[i%4]}" style="animation-delay:${(i%6)*.35}s"/>`}
+  fxEl.insertAdjacentHTML('beforeend',`<svg class="fx-lights" viewBox="0 0 1080 430"><path d="${wire} Q1070 400 1080 396" fill="none" stroke="#1A2B45" stroke-width="2.5"/>${b}</svg>`)}
+ if(t.banner)fxEl.insertAdjacentHTML('beforeend',`<div class="fx-banner">${esc(t.banner)}</div>`);
 }
 function applyTheme(name){
  const t=THEMES[name]||null;if(t===curTheme)return;
  fxTimers.forEach(clearTimeout);fxTimers=[];fxEl.replaceChildren();
- if(curTheme)for(const k in curTheme.vars)stage.style.removeProperty(k);
- curTheme=t;themeLogo=t?t.logo:null;
- if(t){for(const k in t.vars)stage.style.setProperty(k,t.vars[k]);
-  if(!reduceMotion)t.sprites.forEach((spec,i)=>{setTimeout(()=>{if(curTheme===t)spawn(t,spec)},800+i*1500);schedule(t,spec)})}
+ if(curTheme){for(const k in curTheme.vars||{})stage.style.removeProperty(k);if(curTheme.cls)stage.classList.remove(curTheme.cls)}
+ curTheme=t;themeLogo=t&&t.logo||null;
+ if(t){
+  for(const k in t.vars||{})stage.style.setProperty(k,t.vars[k]);
+  if(t.cls)stage.classList.add(t.cls);
+  decorate(t);
+  if(!reduceMotion)t.sprites.forEach(spec=>{
+   for(let i=0;i<(spec.burst||1);i++)setTimeout(()=>{if(curTheme===t)spawn(t,spec)},400+i*350);
+   schedule(t,spec)});
+ }
  li=0;logoColour();
 }
-// Which theme today? CONFIG.theme forces one ("off" = none); otherwise the first CONFIG.themes
-// entry whose MM-DD range contains today (a range may wrap over New Year, e.g. 12-20 → 01-06).
+/* Dates in CONFIG.themes: "MM-DD", or relative to moving feasts: "easter±N", "pust±N"
+   (pust = Shrove Tuesday, 47 days before Easter). Ranges are inclusive and may wrap
+   over New Year (e.g. "12-20" → "01-02"). The first matching entry wins. */
+function easterDate(y){ // Gregorian computus (Meeus/Jones/Butcher)
+ const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,
+  i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=(h+l-7*m+114)%31+1;
+ return Date.UTC(y,mo-1,da);
+}
+function themeDay(spec,y){ // -> "MM-DD" for year y
+ const m=String(spec||'').trim().match(/^(easter|pust)\s*([+-]\s*\d+)?$/i);
+ if(!m)return String(spec||'').trim();
+ const off=(m[1].toLowerCase()==='pust'?-47:0)+(m[2]?parseInt(m[2].replace(/\s/g,'')):0);
+ return new Date(easterDate(y)+off*864e5).toISOString().slice(5,10);
+}
 function autoTheme(){
  if(CONFIG.theme)return CONFIG.theme==='off'?null:CONFIG.theme;
- const d=lj().ymd.slice(5);
- const hit=(CONFIG.themes||[]).find(x=>x.from<=x.to?(d>=x.from&&d<=x.to):(d>=x.from||d<=x.to));
+ const ymd=lj().ymd,d=ymd.slice(5),y=+ymd.slice(0,4);
+ const hit=(CONFIG.themes||[]).find(x=>{const f=themeDay(x.from,y),t=themeDay(x.to,y);return f<=t?(d>=f&&d<=t):(d>=f||d<=t)});
  return hit?hit.name:null;
 }
 function updateTheme(){applyTheme(forcedTheme!==null?forcedTheme:autoTheme())}
 function toast(msg){themeToast.textContent=msg;themeToast.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>themeToast.classList.remove('on'),2500)}
-// Tap on "ŠC KRANJ": samodejno → theme 1 → theme 2 … → izklopljeno → samodejno
+// Tap on "ŠC KRANJ": samodejno → each theme → izklopljeno → samodejno
 document.querySelector('.school').addEventListener('click',()=>{
  const order=[null,...Object.keys(THEMES),'off'];
  forcedTheme=order[(order.indexOf(forcedTheme)+1)%order.length];
