@@ -48,18 +48,20 @@ window.CONFIG = {
      from "from" to "to", inclusive. Dates: "MM-DD", or relative to the moving feasts
      "easter±N" / "pust±N" (pust = Shrove Tuesday). A range may wrap over New Year.
      The first matching entry wins. A tap on "ŠC KRANJ" cycles through all themes by hand.
+     text: banner shown under the header while the theme is on ("" = no banner).
+     Easter is calculated automatically every year: "easter-6" = 6 days before Easter Sunday.
      Available: winter, christmas, presern, valentine, pust, april, easter, summer, welcome, halloween. */
   themes: [
-    { name: "winter",    from: "12-01",    to: "12-19" },    // snow + lights
-    { name: "christmas", from: "12-20",    to: "01-02" },    // snow, lights, greeting
-    { name: "pust",      from: "pust-4",   to: "pust" },     // Friday before → Shrove Tuesday
-    { name: "presern",   from: "02-06",    to: "02-08" },    // Prešernov dan
-    { name: "valentine", from: "02-13",    to: "02-14" },
-    { name: "april",     from: "04-01",    to: "04-01" },    // April Fools' Day
-    { name: "easter",    from: "easter-6", to: "easter+1" }, // week before → Easter Monday
-    { name: "summer",    from: "06-23",    to: "06-24" },    // last school days
-    { name: "welcome",   from: "09-01",    to: "09-01" },    // first school day
-    { name: "halloween", from: "10-19",    to: "10-31" }     // school week before the autumn break
+    { name: "winter",    from: "12-01",    to: "12-19",    text: "" },                                   // snow, lights, Santa hat
+    { name: "christmas", from: "12-20",    to: "01-02",    text: "Vesele praznike in srečno novo leto!" },
+    { name: "pust",      from: "pust-4",   to: "pust",     text: "Pustni čas! Kdo se je danes našemil?" }, // Friday before → Shrove Tuesday
+    { name: "presern",   from: "02-06",    to: "02-08",    text: "8. februar – Prešernov dan · »Žive naj vsi narodi …«" },
+    { name: "valentine", from: "02-13",    to: "02-14",    text: "Srečno valentinovo! ♥" },
+    { name: "april",     from: "04-01",    to: "04-01",    text: "" },                                   // April Fools' Day
+    { name: "easter",    from: "easter-6", to: "easter+1", text: "Vesele velikonočne praznike!" },       // week before Easter → Easter Monday
+    { name: "summer",    from: "06-23",    to: "06-24",    text: "Lepe počitnice! ☀" },                  // last school days
+    { name: "welcome",   from: "09-01",    to: "09-01",    text: "Dobrodošli v novem šolskem letu!" },   // first school day
+    { name: "halloween", from: "10-19",    to: "10-31",    text: "BOO!!!" }                                    // school week before the autumn break
   ],
   theme: "",            // force a theme for testing ("halloween"), or "off"; "" = by date
 

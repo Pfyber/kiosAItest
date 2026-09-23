@@ -903,12 +903,12 @@ function spawn(t,spec){
 function schedule(t,spec){ // keep spawning at random intervals while this theme is on
  fxTimers.push(setTimeout(()=>{if(curTheme!==t)return;spawn(t,spec);schedule(t,spec)},rnd(spec.every[0],spec.every[1])*1000));
 }
-function decorate(t){ // static decoration: banner + string of lights under the header
+function decorate(t,banner){ // static decoration: banner + string of lights under the header
  if(t.lights){const c=['#E0463C','#F5B700','#3FA36B','#6FA8FF'];let wire='M0 396',b='';
   for(let i=0;i<24;i++){const x=22+i*45.5,y=i%2?412:404;wire+=` Q${x-12} ${y+2} ${x} ${y-8}`;
    b+=`<circle class="fx-bulb" cx="${x}" cy="${y}" r="7" fill="${c[i%4]}" style="animation-delay:${(i%6)*.35}s"/>`}
   fxEl.insertAdjacentHTML('beforeend',`<svg class="fx-lights" viewBox="0 0 1080 430"><path d="${wire} Q1070 400 1080 396" fill="none" stroke="#1A2B45" stroke-width="2.5"/>${b}</svg>`)}
- if(t.banner)fxEl.insertAdjacentHTML('beforeend',`<div class="fx-banner">${esc(t.banner)}</div>`);
+ if(banner)fxEl.insertAdjacentHTML('beforeend',`<div class="fx-banner">${esc(banner)}</div>`);
 }
 function applyTheme(name){
  const t=THEMES[name]||null;if(t===curTheme)return;
@@ -918,7 +918,9 @@ function applyTheme(name){
  if(t){
   for(const k in t.vars||{})stage.style.setProperty(k,t.vars[k]);
   if(t.cls)stage.classList.add(t.cls);
-  decorate(t);
+  // banner text: "text" of this theme in CONFIG.themes if set ("" = no banner), else the built-in one
+  const entry=(CONFIG.themes||[]).find(x=>x.name===name&&x.text!==undefined);
+  decorate(t,entry?entry.text:t.banner);
   if(!reduceMotion)t.sprites.forEach(spec=>{
    for(let i=0;i<(spec.burst||1);i++)setTimeout(()=>{if(curTheme===t)spawn(t,spec)},400+i*350);
    schedule(t,spec)});

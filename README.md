@@ -215,8 +215,11 @@ player. On screens set to reduced motion, the colours change but nothing moves.
   `easter±N` and `pust±N` (pust = Shrove Tuesday, 47 days before Easter). The screen
   calculates Easter itself, so these need no yearly update. The first matching entry wins.
   ```js
-  { name: "easter", from: "easter-6", to: "easter+1" },
+  { name: "easter", from: "easter-6", to: "easter+1", text: "Vesele velikonočne praznike!" },
   ```
+- **Banner text:** `text` sets the banner shown under the header while the theme is on.
+  `""` shows no banner (e.g. `winter`, `april`, `halloween` by default); any text you add
+  there appears in the same style.
 - **By hand:** tap "ŠC KRANJ". Each tap cycles samodejno → each theme → izklopljeno. A
   short label under the name shows the choice. After `manualModeMinutes` it returns to
   samodejno.
