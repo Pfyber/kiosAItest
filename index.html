@@ -227,9 +227,12 @@ for(const [k,v] of new URLSearchParams(location.search)){
 
 /* ---------- helpers ---------- */
 const TZ='Europe/Ljubljana';
+// one shared formatter (building an Intl.DateTimeFormat is slow; the clock needs it every second)
+const fmtLj=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
 function lj(d=new Date()){ // current wall-clock time in Ljubljana
- const o={};for(const p of new Intl.DateTimeFormat('en-GB',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(d))o[p.type]=p.value;
+ const o={};for(const p of fmtLj.formatToParts(d))o[p.type]=p.value;
  return {h:+o.hour,min:+o.minute,ymd:`${o.year}-${o.month}-${o.day}`}}
+const ljCache=new Map(); // parsed holiday dates (lessonState/countdownState run every second)
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const clean=s=>String(s??'').replace(/ /g,' ').replace(/\s+/g,' ').trim();
 const log=(...a)=>console.warn('[info-zaslon]',...a);
@@ -274,7 +277,6 @@ function tick(){const d=new Date(),t=ljNow(d);
 /* ---------- school name + name days (godovi.txt: "MM-DD Ime, Ime") ---------- */
 document.getElementById('schoolName').textContent=CONFIG.schoolName||'';
 const godEl=document.getElementById('god');let godovi={},godKey='';
-// Name days replace the "?" in the footer: yellow block "GOD" + one name per line; "?" on days without names.
 // Footer section "Danes goduje" / "Danes godujejo"; hidden on days without names.
 const godBox=document.getElementById('godbox'),godTitle=document.getElementById('godTitle');
 function showGod(){const k=lj().ymd.slice(5);godKey=k;
@@ -295,7 +297,7 @@ loadGodovi();
 // Mon–Fri from CONFIG.lessonsFrom until the end of the last lesson; nothing on
 // weekends, during CONFIG.holidays, or after the last bell.
 const toSec=v=>{const m=String(v).trim().match(/^(\d{1,2})[:.](\d{2})$/);return m?(+m[1])*3600+(+m[2])*60:NaN};
-const leftSl=s=>s>=3600?`${Math.floor(s/3600)} h ${Math.ceil(s%3600/60)} min`:s>=60?`${Math.ceil(s/60)} min`:`${s} s`;
+const leftSl=s=>{if(s<60)return`${s} s`;const m=Math.ceil(s/60);return m>=60?`${Math.floor(m/60)} h`+(m%60?` ${m%60} min`:''):`${m} min`}; // 7199 s -> "2 h", not "1 h 60 min"
 function lessonState(d=new Date()){
  const t=ljNow(d);if(t.wd==='Sat'||t.wd==='Sun')return null;
  const ms=d.getTime();
@@ -322,12 +324,15 @@ function lessonState(d=new Date()){
 // Ljubljana wall-clock time -> epoch ms (correct for summer/winter time, whatever the kiosk's time zone).
 function ljEpoch(y,mo,d,h=0,mi=0,se=0){
  const guess=Date.UTC(y,mo-1,d,h,mi,se);
- const off=t=>{const o={};for(const p of new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).formatToParts(t))o[p.type]=+p.value;
+ const off=t=>{const o={};for(const p of fmtLj.formatToParts(t))o[p.type]=+p.value;
   return Date.UTC(o.year,o.month-1,o.day,o.hour,o.minute,o.second)-t};
  let t=guess-off(guess);return guess-off(t);
 }
 // "2026-10-26" (= 00:00 that day) or "2026-10-23T13:30"
 function parseLj(v,addDays=0){
+ const key=v+'|'+addDays;if(!ljCache.has(key))ljCache.set(key,parseLjRaw(v,addDays));return ljCache.get(key);
+}
+function parseLjRaw(v,addDays){
  const m=String(v||'').match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);if(!m)return NaN;
  return ljEpoch(+m[1],+m[2],+m[3]+addDays,m[4]?+m[4]:0,m[5]?+m[5]:0);
 }

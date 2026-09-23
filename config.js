@@ -19,7 +19,7 @@ window.CONFIG = {
   afternoonMaxDays: 14, // event items older than this are ignored (0 = no limit)
   manualModeMinutes: 10, // tap on the logo switches regular/event news; back to automatic after this (0 = until reload)
   lat: 46.2389, lon: 14.3556, place: "Kranj",
-  logoColors: ["#A7CE39 ", "#FCB040 ", "#41C8F3 ", "#085EA9 ", "#EC3A98 "],
+  logoColors: ["#A7CE39", "#FCB040", "#41C8F3", "#085EA9", "#EC3A98"],
 
   /* Extra options (all optional) */
   logo: "logo.svg",     // SVG file shown in the header
