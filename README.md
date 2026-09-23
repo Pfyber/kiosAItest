@@ -147,6 +147,29 @@ holidays: [
 - `end` is the last free day. The holiday lasts until the end of that day.
 - All times are Slovenian time, including the switch between summer and winter time.
 
+## Current lesson (under the date)
+
+On school days the header shows the current lesson and how long until the next bell.
+On the right are the start and end time of the lesson (or of the next one):
+
+- during a lesson: "3. ura · še 28 min" … "8:55–9:40"
+- during a break: "Odmor · še 3 min" … "4. ura 9:45–10:30"
+- in the morning, from `lessonsFrom` (6:00): "1. ura čez 35 min" … "7:15–8:00"
+- the last minute counts in seconds ("še 40 s")
+
+The bar under it spans one lesson plus the break after it. The lighter part at its end
+is the break, so students see it coming. During the break the yellow fill runs into it.
+
+Nothing is shown on weekends, during the `holidays`, or after the last lesson.
+The bell times are in `config.js`, one `"start-end"` string per lesson:
+
+```js
+lessons: ["7:15-8:00", "8:05-8:50", …],
+```
+
+1.–7. ura come from the school timetable. 8.–17. continue the same 45 + 5 minute
+pattern until 21:20. Check them against the real schedule.
+
 ## How the data is loaded
 
 | Part | Source | Refresh |

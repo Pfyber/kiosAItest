@@ -19,7 +19,7 @@ window.CONFIG = {
   afternoonMaxDays: 14, // event items older than this are ignored (0 = no limit)
   manualModeMinutes: 10, // tap on the logo switches regular/event news; back to automatic after this (0 = until reload)
   lat: 46.2389, lon: 14.3556, place: "Kranj",
-  logoColors: ["#FFFFFF", "#F5B700", "#6FA8FF", "#7ED3A4", "#FF8A7A"],
+  logoColors: ["#A7CE39 ", "#FCB040 ", "#41C8F3 ", "#085EA9 ", "#EC3A98 "],
 
   /* Extra options (all optional) */
   logo: "logo.svg",     // SVG file shown top right in the header
@@ -31,6 +31,16 @@ window.CONFIG = {
   generalDays: 2,       // RTV items from today and yesterday only
   afternoonMax: 10,
   subsDate: "",         // "YYYY-MM-DD" = show substitutions for this day instead of today (testing)
+
+  /* Bell schedule for the "current lesson" line under the date (Mon–Fri).
+     1.–7. ura from the school timetable; 8.–17. continue the same pattern
+     (45 min lesson + 5 min break) – check them against the real schedule. */
+  lessons: [
+    "7:15-8:00", "8:05-8:50", "8:55-9:40", "9:45-10:30", "10:35-11:20", "11:25-12:10", "12:15-13:00",
+    "13:05-13:50", "13:55-14:40", "14:45-15:30", "15:35-16:20", "16:25-17:10", "17:15-18:00", "18:05-18:50",
+    "18:55-19:40", "19:45-20:30", "20:35-21:20"
+  ],
+  lessonsFrom: "6:00",  // show "1. ura čez …" from this time in the morning
 
   /* School holidays for the footer countdown – update every school year.
      start: first free day (countdown runs to 00:00 that day), or "YYYY-MM-DDTHH:MM"

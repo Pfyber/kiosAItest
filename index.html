@@ -94,11 +94,26 @@ html,body{height:100%;background:#000;overflow:hidden}
 .foot b{display:block;font-family:var(--cond);font-weight:700;font-size:30px;color:var(--navy)}
 .foot p{font-size:27px;line-height:1.3;color:#3A475B}
 
-.brand{display:flex;align-items:center;gap:34px}
+.brand{display:flex;align-items:center;gap:26px}
 .logo{flex:none;height:176px;color:#fff;transition:color 1s ease}
 .logo svg{display:block;height:100%;width:auto;max-width:200px}
 @media (prefers-reduced-motion:reduce){.logo{transition:none}}
 .feat>*{flex-shrink:0}
+/* small seconds next to the clock, current lesson line under the date */
+.clock{font-variant-numeric:tabular-nums}
+.top{column-gap:24px}
+.now svg{width:110px;height:110px}
+.clock small{font-size:48px;letter-spacing:0;opacity:.55;margin-left:4px;vertical-align:top;position:relative;top:8px;font-variant-numeric:tabular-nums}
+.date{margin-top:8px}
+.lesson{margin-top:12px;font-size:28px;font-weight:500}
+.lesson[hidden]{display:none}
+.lesson-t{display:flex;justify-content:space-between;align-items:baseline;gap:14px;white-space:nowrap}
+.lesson-t em{font-style:normal;font-size:22px;opacity:.7}
+.lesson b{color:var(--signal);font-weight:700}
+.lesson i{display:block;position:relative;height:6px;margin-top:8px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden}
+.lesson i u{position:absolute;right:0;top:0;bottom:0;background:rgba(255,255,255,.42)}   /* the break after the lesson */
+.lesson i s{position:relative;display:block;height:100%;width:0;background:var(--signal);border-radius:3px}
+.fc{margin-top:16px}
 /* tighter margins around the news card and the substitutions box */
 .news{padding:24px 36px 14px}
 .dots{margin-top:12px}
@@ -121,6 +136,7 @@ html,body{height:100%;background:#000;overflow:hidden}
       <div>
         <div class="clock" id="clock">00:00</div>
         <div class="date" id="date"></div>
+        <div class="lesson" id="lesson" hidden><div class="lesson-t"><span id="lessonText"></span><em id="lessonNext"></em></div><i><u id="lessonBreak"></u><s id="lessonBar"></s></i></div>
       </div>
     </div>
     <div class="now" id="now"></div>
@@ -192,10 +208,49 @@ function fit(){const s=Math.min(innerWidth/1080,innerHeight/1920);
 addEventListener('resize',fit);fit();
 
 /* ---------- clock ---------- */
-function tick(){const d=new Date();
-  document.getElementById('clock').textContent=d.toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit',timeZone:TZ});
-  document.getElementById('date').textContent=d.toLocaleDateString('sl-SI',{weekday:'long',day:'numeric',month:'long',timeZone:TZ});}
-tick();setInterval(tick,1000);
+const fmtNow=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hourCycle:'h23',weekday:'short',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+function ljNow(d=new Date()){const o={};for(const p of fmtNow.formatToParts(d))o[p.type]=p.value;return{h:+o.hour,m:+o.minute,s:+o.second,wd:o.weekday}}
+const pad2=n=>String(n).padStart(2,'0');
+const clockEl=document.getElementById('clock'),dateEl=document.getElementById('date');
+const lessonEl=document.getElementById('lesson'),lessonText=document.getElementById('lessonText'),lessonBar=document.getElementById('lessonBar'),
+ lessonNext=document.getElementById('lessonNext'),lessonBreak=document.getElementById('lessonBreak');
+function tick(){const d=new Date(),t=ljNow(d);
+  clockEl.innerHTML=`${pad2(t.h)}:${pad2(t.m)}<small>${pad2(t.s)}</small>`;
+  const ds=d.toLocaleDateString('sl-SI',{weekday:'long',day:'numeric',month:'long',timeZone:TZ});
+  if(dateEl.textContent!==ds)dateEl.textContent=ds;
+  const st=lessonState(d);lessonEl.hidden=!st;
+  if(st){const html=(st.label?`<b>${st.label}</b> · `:'')+st.text;if(lessonText.innerHTML!==html)lessonText.innerHTML=html;
+   if(lessonNext.textContent!==st.next)lessonNext.textContent=st.next;
+   lessonBreak.style.width=(st.brk*100).toFixed(2)+'%';
+   lessonBar.style.width=(Math.max(0,Math.min(1,st.p))*100).toFixed(2)+'%'}
+}
+
+/* ---------- current lesson (bell schedule in CONFIG.lessons) ---------- */
+// Mon–Fri from CONFIG.lessonsFrom until the end of the last lesson; nothing on
+// weekends, during CONFIG.holidays, or after the last bell.
+const toSec=v=>{const m=String(v).trim().match(/^(\d{1,2})[:.](\d{2})$/);return m?(+m[1])*3600+(+m[2])*60:NaN};
+const leftSl=s=>s>=3600?`${Math.floor(s/3600)} h ${Math.ceil(s%3600/60)} min`:s>=60?`${Math.ceil(s/60)} min`:`${s} s`;
+function lessonState(d=new Date()){
+ const t=ljNow(d);if(t.wd==='Sat'||t.wd==='Sun')return null;
+ const ms=d.getTime();
+ if((CONFIG.holidays||[]).some(x=>{const a=parseLj(x.start),b=/T/.test(x.end||'')?parseLj(x.end):parseLj(x.end,1);return ms>=a&&ms<b}))return null;
+ const L=(CONFIG.lessons||[]).map((x,i)=>{const [a,b]=String(x).split('-').map(toSec);return{n:i+1,a,b}}).filter(x=>!isNaN(x.a)&&!isNaN(x.b));
+ if(!L.length)return null;
+ const sec=t.h*3600+t.m*60+t.s,from=toSec(CONFIG.lessonsFrom||'6:00');
+ if(sec<from||sec>=L[L.length-1].b)return null;
+ const hm=v=>`${Math.floor(v/3600)}:${pad2(Math.floor(v%3600/60))}`;
+ // The bar spans one lesson plus the break after it; the lighter end part is the break.
+ const cycle=(x,nx,left,next,label,text)=>{const end=nx?nx.a:x.b;
+  return{label,text,next,p:(sec-x.a)/(end-x.a),brk:nx?(nx.a-x.b)/(end-x.a):0}};
+ for(let i=0;i<L.length;i++){const x=L[i],nx=L[i+1];
+  if(sec<x.a){
+   if(!i)return{label:'',text:`${x.n}. ura čez ${leftSl(x.a-sec)}`,next:`${hm(x.a)}–${hm(x.b)}`,p:(sec-from)/(x.a-from),brk:0}; // morning
+   const pv=L[i-1];return cycle(pv,x,0,`${x.n}. ura ${hm(x.a)}–${hm(x.b)}`,'Odmor',`še ${leftSl(x.a-sec)}`)}          // break
+  if(sec<x.b)return cycle(x,nx,0,`${hm(x.a)}–${hm(x.b)}`,`${x.n}. ura`,`še ${leftSl(x.b-sec)}`)} // lesson
+ return null;
+}
+// tick right on each full second, so the seconds never skip
+(function loopClock(){tick();setTimeout(loopClock,1000-Date.now()%1000+5)})();
 
 /* ---------- countdown to the next school holiday (footer) ---------- */
 // Ljubljana wall-clock time -> epoch ms (correct for summer/winter time, whatever the kiosk's time zone).
