@@ -1,0 +1,370 @@
+# Godovi – imena, ki goduje na posamezen dan (MM-DD Ime, Ime).
+# Vir: slovenski cerkveni koledar (sl.wikipedia.org/wiki/Koledar_svetnikov, katoliska-cerkev.si),
+# dopolnjeno z ljudskim koledarjem. Dan brez imena = praznik, vrstica se na zaslonu skrije.
+# Popravke vnesi kar tu – zaslon prebere datoteko ob vsakem nalaganju.
+01-01 Marija
+01-02 Bazilij, Gregor
+01-03 Genovefa
+01-04 Elizabeta, Angela
+01-05 Simeon
+01-06 Gašper, Miha, Boltežar
+01-07 Rajmund
+01-08 Severin
+01-09 Hadrijan
+01-10 Agaton
+01-11 Pavlin
+01-12 Ernest, Tatjana
+01-13 Hilarij
+01-14 Feliks
+01-15 Pavel
+01-16 Marcel
+01-17 Anton
+01-18 Marjeta
+01-19 Makarij
+01-20 Fabijan, Sebastijan
+01-21 Neža
+01-22 Lavra, Vincencij
+01-23 Henrik
+01-24 Frančišek
+01-25 Pavel
+01-26 Timotej, Tit
+01-27 Angela
+01-28 Tomaž
+01-29 Valerij
+01-30 Martina
+01-31 Janez
+02-01 Brigita
+02-02
+02-03 Blaž
+02-04 Gilbert
+02-05 Agata
+02-06 Pavel
+02-07 Egidij, Koleta
+02-08 Hieronim
+02-09 Apolonija
+02-10 Sholastika
+02-11
+02-12 Aleksij, Evlalija
+02-13 Kristina, Jordan
+02-14 Valentin
+02-15 Klavdij
+02-16 Julijana
+02-17 Aleš
+02-18 Bernardka, Flavijan
+02-19 Bonifacij
+02-20 Leon
+02-21 Irena, Eleonora, Peter
+02-22 Peter
+02-23 Polikarp
+02-24 Matija
+02-25 Valburga
+02-26 Aleksander
+02-27 Gabrijel
+02-28 Roman
+02-29 Osvald
+03-01 Albin
+03-02 Neža
+03-03 Kunigunda
+03-04 Kazimir
+03-05 Hadrijan
+03-06 Fridolin, Miroslav
+03-07 Perpetua, Felicita
+03-08 Janez
+03-09 Frančiška
+03-10
+03-11 Konštantin
+03-12 Gregor, Doroteja
+03-13 Kristina, Patricija
+03-14 Matilda, Lazar
+03-15 Klemen
+03-16 Hilarij
+03-17 Patrik, Jerica
+03-18 Ciril, Anzelm
+03-19 Jožef
+03-20 Klavdija
+03-21 Serapion
+03-22 Lea
+03-23 Turibij, Alonz
+03-24 Katarina
+03-25 Marija
+03-26 Larisa
+03-27 Rupert, Geladij
+03-28 Bojan
+03-29 Bertold
+03-30 Amadej
+03-31 Kornelija, Benjamin, Modest
+04-01 Hugo, Ljuba
+04-02 Frančišek, Teodozija
+04-03 Irena, Sikst
+04-04 Izidor
+04-05 Vincencij
+04-06 Viljem
+04-07 Janez
+04-08 Valter
+04-09 Valtruda
+04-10 Ezekiel
+04-11 Stanislav
+04-12 Julij
+04-13 Ida
+04-14 Valerijan, Lidvina
+04-15 Helena
+04-16 Bernardka
+04-17 Rudolf, Inocenc
+04-18 Evzebij
+04-19 Ema
+04-20 Hilda
+04-21 Anzelm
+04-22 Hugo
+04-23 Jurij
+04-24 Fidelis, Honorij
+04-25 Marko
+04-26 Dominik, Gregor
+04-27 Cita, Hozana
+04-28 Peter
+04-29 Katarina
+04-30 Pij
+05-01 Jožef
+05-02 Atanazij
+05-03 Filip, Jakob
+05-04 Florjan
+05-05 Angel, Juta
+05-06 Dominik
+05-07 Stanislav
+05-08 Bonifacij
+05-09 Pahomij
+05-10 Job
+05-11 Estela, Mamert
+05-12 Leopold
+05-13
+05-14 Bonifacij
+05-15 Zofija
+05-16 Janez
+05-17 Jošt
+05-18 Leonard, Janez
+05-19 Urban
+05-20 Bernardin
+05-21 Krištof
+05-22 Julija
+05-23 Dezider, Renata
+05-24 Marija
+05-25 Beda
+05-26 Filip
+05-27 Alojzij
+05-28 Andrej
+05-29 Maksim
+05-30 Ivana, Kancijan
+05-31
+06-01 Justin
+06-02 Marcelin, Peter
+06-03 Karel
+06-04 Filip
+06-05 Valerija
+06-06 Norbert
+06-07 Robert
+06-08 Medard
+06-09 Primož, Felicijan
+06-10 Diana
+06-11 Barnaba
+06-12 Eskil
+06-13 Anton
+06-14 Valerij, Elizej, Tadej
+06-15 Vid
+06-16 Gvido
+06-17 Gregor, Beno
+06-18 Gregor
+06-19 Romuald, Nazarij
+06-20 Silverij
+06-21 Alojzij
+06-22 Ahac
+06-23
+06-24 Janez
+06-25 Viljem
+06-26 Vigilij
+06-27 Ema
+06-28 Irenej
+06-29 Peter, Pavel
+06-30 Ladislav
+07-01 Estera
+07-02 Frančišek
+07-03 Tomaž
+07-04 Urh, Elizabeta
+07-05 Ciril, Metod
+07-06 Marija
+07-07 Vilibald
+07-08 Kilijan
+07-09 Avguštin
+07-10 Amalija
+07-11 Benedikt
+07-12 Mohor, Fortunat
+07-13 Henrik
+07-14 Kamil
+07-15 Bonaventura, Vladimir
+07-16 Karmen, Karmela
+07-17 Aleš
+07-18 Friderik
+07-19 Arsen
+07-20 Marjeta
+07-21 Lovrenc
+07-22 Magdalena
+07-23 Brigita
+07-24 Krištof
+07-25 Jakob
+07-26 Ana, Joahim
+07-27 Gorazd, Kliment
+07-28 Viktor
+07-29 Marta
+07-30 Peter, Julita
+07-31 Ignacij
+08-01 Alfonz
+08-02 Evzebij
+08-03 Nikodem, Lidija
+08-04 Janez
+08-05 Snežana
+08-06
+08-07 Sikst, Kajetan
+08-08 Dominik
+08-09 Terezija, Edita
+08-10 Lovrenc
+08-11 Klara
+08-12 Ivana
+08-13 Hipolit
+08-14 Maksimiljan
+08-15 Marija
+08-16 Rok
+08-17 Hiacint, Liberat
+08-18 Helena
+08-19 Janez
+08-20 Bernard
+08-21 Pij, Zdenko
+08-22
+08-23 Roza, Irenej
+08-24 Jernej
+08-25 Ludvik
+08-26 Tarcizij
+08-27 Monika
+08-28 Avguštin
+08-29 Janez
+08-30 Feliks
+08-31 Rajmund
+09-01 Tilen, Egidij
+09-02 Bernard
+09-03 Gregor, Marino
+09-04 Rozalija
+09-05 Viktorin, Terezija
+09-06 Zaharija
+09-07 Regina
+09-08 Marija
+09-09 Peter
+09-10 Elizabeta
+09-11 Ines, Hijacint
+09-12 Helga, Gvido
+09-13 Janez
+09-14
+09-15 Dolores
+09-16 Kornelij, Ciprijan
+09-17 Robert, Hildegarda
+09-18 Jožef
+09-19 Januarij
+09-20 Andrej
+09-21 Matej
+09-22 Mavricij
+09-23 Pij, Tekla
+09-24 Anton
+09-25 Sergij
+09-26 Kozma, Damijan
+09-27 Vincencij
+09-28 Venčeslav
+09-29 Mihael, Gabrijel, Rafael
+09-30 Hieronim
+10-01 Terezija
+10-02
+10-03 Frančišek
+10-04 Frančišek
+10-05 Favstina
+10-06 Bruno
+10-07
+10-08 Benedikta
+10-09 Dionizij, Abraham, Sara
+10-10 Florencij, Danilo
+10-11 Filip
+10-12 Maksimilijan
+10-13 Koloman
+10-14 Kalist
+10-15 Terezija
+10-16 Hedvika, Marjeta
+10-17 Ignacij
+10-18 Luka
+10-19 Pavel
+10-20 Irena
+10-21 Uršula
+10-22 Saloma, Janez
+10-23 Janez
+10-24 Anton
+10-25 Darija, Darinka, Krizant
+10-26 Lucijan, Marcijan
+10-27 Sabina
+10-28 Simon, Juda
+10-29 Mihael
+10-30 Marcijan, Marcel
+10-31 Bolfenk
+11-01
+11-02
+11-03 Viktorin
+11-04 Karel
+11-05 Zaharija, Elizabeta
+11-06 Lenart
+11-07 Ernest
+11-08 Bogomir
+11-09 Teodor
+11-10 Leon
+11-11 Martin
+11-12 Milan
+11-13 Stanislav
+11-14 Nikolaj
+11-15 Albert
+11-16 Marjeta
+11-17 Elizabeta
+11-18 Roman
+11-19 Matilda
+11-20 Edmund, Gelazij
+11-21
+11-22 Cecilija
+11-23 Klemen
+11-24 Andrej
+11-25 Katarina
+11-26 Nil
+11-27 Sabina
+11-28 Katarina
+11-29 Saturnin
+11-30 Andrej
+12-01 Natalija
+12-02 Blanka
+12-03 Frančišek
+12-04 Janez, Barbara
+12-05 Saba
+12-06 Nikolaj
+12-07 Ambrož
+12-08 Marija
+12-09 Peter
+12-10 Jana
+12-11 Damaz
+12-12 Amalija
+12-13 Lucija
+12-14 Janez
+12-15 Kristina
+12-16 Albina
+12-17 Lazar
+12-18 Gacijan
+12-19 Urban
+12-20 Evgen
+12-21 Peter
+12-22 Justina
+12-23 Ivo
+12-24 Adam, Eva
+12-25
+12-26 Štefan
+12-27 Janez
+12-28
+12-29 Tomaž
+12-30 Danilo, Danila
+12-31 Silvester

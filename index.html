@@ -104,6 +104,22 @@ html,body{height:100%;background:#000;overflow:hidden}
 .feat.img h2{margin-bottom:18px;line-height:1.14} /* taller lines: the 2-line clamp no longer cuts j/p/g descenders */
 /* small seconds next to the clock, current lesson line under the date */
 .clock{font-variant-numeric:tabular-nums}
+/* school name + today's name days, top right above the weather (uses the template's .school slot) */
+.school{opacity:1;align-self:start}
+/* weather: icon right next to the temperature, description on its own line below;
+   everything shares the right edge with the school name */
+.now{justify-self:end;display:grid;grid-template-columns:auto auto;justify-content:end;align-items:center;column-gap:12px}
+.now>div{display:contents}
+.now svg,.now .t{grid-row:1}
+.now svg{justify-self:end}
+.now .t{justify-self:end}
+.now .d{grid-column:1 / 3;text-align:right}
+.school b{display:block;font-weight:700;font-size:32px;letter-spacing:1.5px;opacity:.75}
+.godbox{flex:none;max-width:210px;padding-left:24px;border-left:2px solid var(--line)}
+.foot{padding:0 36px;gap:24px}
+.foot .cd{padding-left:24px}
+.godbox[hidden]{display:none}
+.foot .godbox p{font-size:25px;line-height:1.25;color:#3A475B}
 .top{column-gap:24px}
 .now svg{width:110px;height:110px}
 .clock small{font-size:48px;letter-spacing:0;opacity:.55;margin-left:4px;vertical-align:top;position:relative;top:8px;font-variant-numeric:tabular-nums}
@@ -122,12 +138,13 @@ html,body{height:100%;background:#000;overflow:hidden}
 .dots{margin-top:12px}
 .subs{padding:0 36px 18px}
 .subs-h{margin-bottom:8px}
-.foot>div:nth-child(2){flex:1;min-width:0}
+.foot>.fact{flex:1;min-width:0}
+.foot #fact{font-size:25px}
 #fact{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
 .cd{flex:none;padding-left:30px;border-left:2px solid var(--line);text-align:right}
 .cd[hidden]{display:none}
-.foot .cd span{display:block;font-size:22px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.foot .cd b{font-family:var(--cond);font-weight:800;font-size:54px;line-height:1.05;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap}
+.foot .cd span{display:block;font-size:19px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.foot .cd b{font-family:var(--cond);font-weight:800;font-size:48px;line-height:1.05;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.feat.swap,.cols.swap{animation:none}}
 </style>
 </head>
@@ -142,6 +159,7 @@ html,body{height:100%;background:#000;overflow:hidden}
         <div class="lesson" id="lesson" hidden><div class="lesson-t"><span id="lessonText"></span><em id="lessonNext"></em></div><i><u id="lessonBreak"></u><s id="lessonBar"></s></i></div>
       </div>
     </div>
+    <div class="school"><b id="schoolName"></b></div>
     <div class="now" id="now"></div>
     <div class="fc" id="fc"></div>
   </header>
@@ -157,8 +175,8 @@ html,body{height:100%;background:#000;overflow:hidden}
   </section>
 
   <footer class="foot">
-    <div class="q">?</div>
-    <div><b>Ali veš?</b><p id="fact"></p></div>
+    <div class="fact"><b>Ali veš?</b><p id="fact"></p></div>
+    <div class="godbox" id="godbox" hidden><b id="godTitle">Danes goduje</b><p id="god"></p></div>
     <div class="cd" id="cd" hidden><span id="cdLabel"></span><b id="cdTime"></b></div>
   </footer>
 </div>
@@ -220,13 +238,33 @@ const lessonEl=document.getElementById('lesson'),lessonText=document.getElementB
 function tick(){const d=new Date(),t=ljNow(d);
   clockEl.innerHTML=`${pad2(t.h)}:${pad2(t.m)}<small>${pad2(t.s)}</small>`;
   const ds=d.toLocaleDateString('sl-SI',{weekday:'long',day:'numeric',month:'long',timeZone:TZ});
-  if(dateEl.textContent!==ds)dateEl.textContent=ds;
+  if(dateEl.textContent!==ds){dateEl.textContent=ds;if(typeof showGod==='function'&&godKey)showGod()}
   const st=lessonState(d);lessonEl.hidden=!st;
   if(st){const html=(st.label?`<b>${st.label}</b> · `:'')+st.text;if(lessonText.innerHTML!==html)lessonText.innerHTML=html;
    if(lessonNext.textContent!==st.next)lessonNext.textContent=st.next;
    lessonBreak.style.width=(st.brk*100).toFixed(2)+'%';
    lessonBar.style.width=(Math.max(0,Math.min(1,st.p))*100).toFixed(2)+'%'}
 }
+
+/* ---------- school name + name days (godovi.txt: "MM-DD Ime, Ime") ---------- */
+document.getElementById('schoolName').textContent=CONFIG.schoolName||'';
+const godEl=document.getElementById('god');let godovi={},godKey='';
+// Name days replace the "?" in the footer: yellow block "GOD" + one name per line; "?" on days without names.
+// Footer section "Danes goduje" / "Danes godujejo"; hidden on days without names.
+const godBox=document.getElementById('godbox'),godTitle=document.getElementById('godTitle');
+function showGod(){const k=lj().ymd.slice(5);godKey=k;
+ const names=(godovi[k]||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,3);
+ godBox.hidden=!names.length;
+ godTitle.textContent=names.length>1?'Danes godujejo':'Danes goduje';
+ godEl.textContent=names.join(', ')}
+async function loadGodovi(){
+ if(!CONFIG.namedays)return;
+ try{const t=await fetchText(CONFIG.namedays);godovi={};
+  for(const l of t.split(/\r?\n/)){const m=l.trim().match(/^(\d{2}-\d{2})\s+(.+)$/);if(m)godovi[m[1]]=m[2].trim()}
+ }catch(e){log('namedays',e)}
+ showGod();
+}
+loadGodovi();
 
 /* ---------- current lesson (bell schedule in CONFIG.lessons) ---------- */
 // Mon–Fri from CONFIG.lessonsFrom until the end of the last lesson; nothing on

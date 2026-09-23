@@ -22,7 +22,9 @@ window.CONFIG = {
   logoColors: ["#A7CE39 ", "#FCB040 ", "#41C8F3 ", "#085EA9 ", "#EC3A98 "],
 
   /* Extra options (all optional) */
-  logo: "logo.svg",     // SVG file shown top right in the header
+  logo: "logo.svg",     // SVG file shown in the header
+  schoolName: "ŠC KRANJ", // shown top right above the weather
+  namedays: "godovi.txt", // today's name days in the footer ("" = off)
   schoolBadge: "STŠ",   // source badges on the news card
   afternoonBadge: "IO",
   generalBadge: "RTV",

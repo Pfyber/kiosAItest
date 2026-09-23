@@ -9,6 +9,7 @@ portrait screen). Plain HTML/CSS/JS: no backend, no build step, no dependencies.
 | `config.js` | Settings (feeds, proxy, holidays, …) |
 | `logo.svg` | School logo, recoloured every minute |
 | `facts/` | "Ali veš?" facts |
+| `godovi.txt` | Name days for every day of the year, shown in the footer |
 | `proxy/cloudflare-worker.js` | The CORS proxy; runs on Cloudflare, not on GitHub Pages |
 | `design/Info zaslon SCKR.html` | The original static design prototype, for reference |
 | `.nojekyll` | Tells GitHub Pages to serve the files as they are |
@@ -95,6 +96,8 @@ index.html?logoColors=FFFFFF,F5B700,6FA8FF
 | `lat`, `lon`, `place` | Weather location and the name shown |
 | `logoColors` | Logo colours, cycled once per minute |
 | `logo` | Logo file (default `logo.svg`) |
+| `schoolName` | Text top right above the weather (default `ŠC KRANJ`) |
+| `namedays` | Name-day file for the footer (default `godovi.txt`, `""` = off) |
 | `schoolBadge`, `afternoonBadge`, `generalBadge` | Source labels on the news card (`STŠ`, `IO`, `RTV`) |
 | `schoolMax`, `afternoonMax` | Max. items per feed |
 | `generalMax` | Max. RTV items per pass through the news (each pass shows a new batch) |
@@ -126,6 +129,22 @@ the current colour (`fill="none"` stays), and it is cropped to the drawing autom
    folder, so only files listed there are loaded.
 
 A random fact is shown every 30 s. No fact repeats until all have been shown.
+
+## Name days ("God: …")
+
+In the footer, between "Ali veš?" and the holiday countdown, a section "Danes goduje"
+shows today's name days from `godovi.txt`, one line per day of the year:
+
+```
+09-23 Pij, Tekla
+09-24 Anton
+```
+
+- The names come from the Slovenian church calendar (Wikipedia "Koledar svetnikov",
+  katoliska-cerkev.si), completed from the folk calendar. At most three common names
+  per day.
+- On a day with no names (e.g. `12-25`, a feast day) the section is hidden.
+- To correct a day, edit its line. Lines starting with `#` are ignored.
 
 ## Holiday countdown
 
