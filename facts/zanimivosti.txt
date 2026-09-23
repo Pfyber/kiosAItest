@@ -1,0 +1,202 @@
+# Čudne, smešne in resnične zanimivosti – ena na vrstico, največ ~100 znakov.
+# Nad vsako je vir (vrstice z # zaslon ne prikaže).
+
+# --- Živali ---
+# Vir: https://en.wikipedia.org/wiki/Octopus
+Hobotnica ima tri srca in modro kri.
+# Vir: https://en.wikipedia.org/wiki/Wombat
+Vombati so edine znane živali, ki delajo kockaste iztrebke.
+# Vir: https://en.wikipedia.org/wiki/Sea_otter
+Morske vidre se med spanjem držijo za tace, da jih tok ne odnese narazen.
+# Vir: https://en.wikipedia.org/wiki/Sea_otter
+Morske vidre imajo pod pazduho kožni žep, v katerem hranijo svoj najljubši kamen.
+# Vir: https://en.wikipedia.org/wiki/Flamingo
+Flamingi so rožnati zaradi hrane: barvila dobijo iz rakcev in alg.
+# Vir: https://en.wikipedia.org/wiki/Hummingbird
+Kolibriji so edine ptice, ki znajo leteti tudi vzvratno.
+# Vir: https://en.wikipedia.org/wiki/Seahorse
+Pri morskih konjičkih mladiče v trebušni vrečki nosijo samci.
+# Vir: https://en.wikipedia.org/wiki/Koala
+Koale imajo prstne odtise, ki jih je skoraj nemogoče ločiti od človeških.
+# Vir: https://en.wikipedia.org/wiki/Cat#Senses
+Mačke ne zaznajo sladkega okusa, ker nimajo delujočega receptorja zanj.
+# Vir: https://en.wikipedia.org/wiki/Butterfly
+Metulji okušajo hrano z nogami.
+# Vir: https://en.wikipedia.org/wiki/Cricket_(insect)
+Murni imajo ušesa na sprednjih nogah.
+# Vir: https://en.wikipedia.org/wiki/Earthworm
+Deževnik ima pet parov srčnih lokov, ki poganjajo njegovo kri.
+# Vir: https://en.wikipedia.org/wiki/Polar_bear
+Polarni medved ima črno kožo, njegova dlaka pa je v resnici prozorna.
+# Vir: https://en.wikipedia.org/wiki/Zebra
+Vzorec črt je pri vsaki zebri drugačen, podobno kot naši prstni odtisi.
+# Vir: https://en.wikipedia.org/wiki/Tiger
+Tiger ima progasto tudi kožo, ne le kožuh.
+# Vir: https://en.wikipedia.org/wiki/Giraffe
+Žirafa ima v vratu sedem vretenc – prav toliko kot človek.
+# Vir: https://en.wikipedia.org/wiki/Giraffe
+Žirafin jezik je temno vijoličen in dolg do 50 centimetrov.
+# Vir: https://en.wikipedia.org/wiki/Hippopotamus
+Povodni konji izločajo rdečkasto tekočino, ki deluje kot njihova krema za sončenje.
+# Vir: https://en.wikipedia.org/wiki/Camel
+Kamelja grba ni polna vode, ampak maščobe.
+# Vir: https://en.wikipedia.org/wiki/Mantis_shrimp
+Rak bogomoljka udari tako hitro, da mehurčki ob udarcu za hip zasvetijo.
+# Vir: https://en.wikipedia.org/wiki/Owl
+Sove ne morejo premikati oči, zato lahko glavo zasučejo za do 270 stopinj.
+# Vir: https://en.wikipedia.org/wiki/American_crow (raziskave Johna Marzluffa)
+Vrane si zapomnijo obraze ljudi in o njih »povedo« drugim vranam.
+# Vir: https://en.wikipedia.org/wiki/Unihemispheric_slow-wave_sleep
+Delfini spijo z eno polovico možganov, druga pa medtem bedi.
+# Vir: https://en.wikipedia.org/wiki/Starfish
+Morske zvezde nimajo ne možganov ne krvi.
+# Vir: https://en.wikipedia.org/wiki/Jellyfish
+Meduze plavajo po morjih že več kot 500 milijonov let – dlje kot dinozavri.
+# Vir: https://en.wikipedia.org/wiki/Tardigrade
+Vodni medvedki so preživeli celo izpostavljenost vesolju zunaj vesoljske ladje.
+# Vir: https://en.wikipedia.org/wiki/Spider_silk
+Pajkova svila je glede na svojo težo močnejša od jekla.
+# Vir: https://en.wikipedia.org/wiki/Shark
+Morski psi so starejši od dreves: živijo že več kot 400 milijonov let.
+# Vir: https://en.wikipedia.org/wiki/Shark
+Morski psi nimajo niti ene kosti – njihovo ogrodje je iz hrustanca.
+# Vir: https://en.wikipedia.org/wiki/Sloth
+Lenivci splezajo z drevesa približno enkrat na teden – da gredo na stranišče.
+# Vir: https://en.wikipedia.org/wiki/Gentoo_penguin
+Nekateri pingvini partnerju za snubljenje podarijo lep kamenček.
+# Vir: https://en.wikipedia.org/wiki/Fitzroy_River_turtle
+Avstralska želva iz reke Fitzroy lahko pod vodo diha skozi kloako.
+# Vir: https://en.wikipedia.org/wiki/Waggle_dance
+Čebele s plesom drugim čebelam povedo, kje najdejo cvetove.
+# Vir: https://www.honey.com/ (National Honey Board)
+Ena čebela v vsem življenju naredi le približno dvanajstino žličke medu.
+# Vir: https://www.pnas.org/doi/10.1073/pnas.2201550119 (Schultheiss idr., 2022)
+Na Zemlji živi približno 20 bilijard mravelj – okoli 2,5 milijona na vsakega človeka.
+# Vir: https://en.wikipedia.org/wiki/Rhinoceros
+Nosorogov rog je iz keratina – iste snovi kot naši lasje in nohti.
+
+# --- Dinozavri ---
+# Vir: https://en.wikipedia.org/wiki/Tyrannosaurus
+T. rex je živel bližje našemu času kot času stegozavra.
+# Vir: https://en.wikipedia.org/wiki/Bird
+Ptice so živi dinozavri – kokoš je daljna sorodnica T. rexa.
+
+# --- Hrana ---
+# Vir: https://www.smithsonianmag.com/science-nature/the-science-behind-honeys-eternal-shelf-life-1218690/
+V egipčanskih grobnicah so našli več tisoč let star med, ki je bil še užiten.
+# Vir: https://en.wikipedia.org/wiki/Berry_(botany)
+Banana je po botanični definiciji jagoda, jagoda pa ni.
+# Vir: https://en.wikipedia.org/wiki/Peanut
+Arašidi niso oreščki, ampak stročnice – sorodniki graha in fižola.
+# Vir: https://en.wikipedia.org/wiki/Strawberry
+Jagoda ima semena na zunanji strani – v povprečju okoli 200.
+# Vir: https://en.wikipedia.org/wiki/Carrot
+Prvo gojeno korenje je bilo vijolično ali rumeno, ne oranžno.
+# Vir: https://en.wikipedia.org/wiki/Ketchup
+V 30. letih 19. stoletja so kečap v ZDA prodajali kot zdravilo v tabletah.
+# Vir: https://en.wikipedia.org/wiki/Hawaiian_pizza
+Havajsko pico z ananasom so izumili v Kanadi, ne na Havajih.
+
+# --- Človeško telo ---
+# Vir: https://en.wikipedia.org/wiki/Human_skeleton
+Dojenček ima ob rojstvu okoli 300 kosti, odrasel človek pa 206.
+# Vir: https://en.wikipedia.org/wiki/Tooth_enamel
+Zobna sklenina je najtrša snov v človeškem telesu.
+# Vir: https://en.wikipedia.org/wiki/Nail_(anatomy)
+Nohti na rokah rastejo nekajkrat hitreje kot nohti na nogah.
+# Vir: https://www.guinnessworldrecords.com/world-records/longest-attack-of-hiccups
+Američan Charles Osborne je neprekinjeno kolcal 68 let.
+# Vir: https://en.wikipedia.org/wiki/Color_vision
+Človeško oko loči približno milijon različnih barvnih odtenkov.
+# Vir: https://www.nasa.gov/humans-in-space/ (NASA Twins Study)
+Astronavti v vesolju zrastejo do tri odstotke, ker se jim hrbtenica raztegne.
+
+# --- Vesolje ---
+# Vir: https://science.nasa.gov/venus/
+Na Veneri je dan daljši od leta: vrti se počasneje, kot kroži okoli Sonca.
+# Vir: https://science.nasa.gov/venus/
+Venera se vrti v obratno smer, zato tam Sonce vzhaja na zahodu.
+# Vir: https://en.wikipedia.org/wiki/Sunset
+Sončni zahodi na Marsu so modri.
+# Vir: https://science.nasa.gov/jupiter/
+Dan na Jupitru traja manj kot deset ur.
+# Vir: https://science.nasa.gov/jupiter/
+Velika rdeča pega na Jupitru je nevihta, večja od cele Zemlje.
+# Vir: https://science.nasa.gov/saturn/
+Saturn ima manjšo gostoto od vode – v dovolj veliki kadi bi plaval.
+# Vir: https://en.wikipedia.org/wiki/Neutron_star
+Čajna žlička snovi iz nevtronske zvezde bi tehtala okoli milijardo ton.
+# Vir: https://www.nasa.gov/international-space-station/
+Astronavti na vesoljski postaji vidijo 16 sončnih vzhodov na dan.
+# Vir: https://en.wikipedia.org/wiki/Moon_landing
+Odtisi astronavtov na Luni bodo ostali milijone let, saj tam ni vetra.
+# Vir: https://www.weather.gov/safety/lightning-science-overview (NOAA)
+Strela je okoli petkrat bolj vroča od površja Sonca.
+# Vir: https://www.nature.com/articles/nature14967 (Crowther idr., 2015)
+Na Zemlji je več dreves kot zvezd v naši galaksiji.
+# Vir: https://en.wikipedia.org/wiki/Australia
+Avstralija je od vzhoda do zahoda širša od Lune.
+
+# --- Zgodovina ---
+# Vir: https://en.wikipedia.org/wiki/Cleopatra
+Kleopatra je živela bližje pristanku na Luni kot gradnji Keopsove piramide.
+# Vir: https://en.wikipedia.org/wiki/University_of_Oxford
+Univerza v Oxfordu je starejša od azteškega imperija.
+# Vir: https://en.wikipedia.org/wiki/Anglo-Zanzibar_War
+Najkrajša vojna v zgodovini, med Britanijo in Zanzibarjem, je trajala manj kot 45 minut.
+# Vir: https://en.wikipedia.org/wiki/Robot
+Beseda »robot« izhaja iz češke besede »robota«, ki pomeni tlačanstvo ali garanje.
+
+# --- Tehnologija ---
+# Vir: https://en.wikipedia.org/wiki/Computer_mouse
+Prva računalniška miška iz leta 1964 je bila lesena škatlica z dvema kolescema.
+# Vir: http://info.cern.ch/
+Prva spletna stran na svetu iz leta 1991 še vedno deluje: info.cern.ch
+# Vir: https://en.wikipedia.org/wiki/Me_at_the_zoo
+Prvi posnetek na YouTubu, »Me at the zoo«, traja le 19 sekund.
+# Vir: https://en.wikipedia.org/wiki/Bluetooth
+Bluetooth je dobil ime po danskem kralju Haraldu Modrozobem.
+# Vir: https://en.wikipedia.org/wiki/Google
+Ime Google izhaja iz besede googol – števila z enico in sto ničlami.
+# Vir: https://en.wikipedia.org/wiki/Emoji
+Prvih 176 emojijev iz leta 1999 hrani muzej moderne umetnosti MoMA v New Yorku.
+# Vir: https://en.wikipedia.org/wiki/Lego
+Lego izdela največ pnevmatik na svetu – seveda majhnih, za kocke.
+# Vir: https://en.wikipedia.org/wiki/Optimal_solutions_for_the_Rubik%27s_Cube
+Vsako premešano Rubikovo kocko je mogoče rešiti v največ 20 potezah.
+# Vir: https://en.wikipedia.org/wiki/Shannon_number
+Možnih šahovskih partij je več kot atomov v vidnem vesolju.
+
+# --- Svet ---
+# Vir: https://en.wikipedia.org/wiki/Unicorn
+Nacionalna žival Škotske je samorog.
+# Vir: https://en.wikipedia.org/wiki/Lakes_of_Canada
+V Kanadi je več jezer kot v vseh drugih državah sveta skupaj.
+# Vir: https://en.wikipedia.org/wiki/Time_in_Russia
+Rusija se razteza čez 11 časovnih pasov.
+# Vir: https://en.wikipedia.org/wiki/Atacama_Desert
+V nekaterih delih puščave Atacama v Čilu ni deževalo, odkar merijo padavine.
+# Vir: https://en.wikipedia.org/wiki/Ain_Sefra
+Tudi v Sahari je že snežilo, na primer v alžirskem puščavskem mestu Ain Sefra.
+# Vir: https://en.wikipedia.org/wiki/Eiffel_Tower
+Eifflov stolp je poleti do 15 centimetrov višji, ker se železo v vročini raztegne.
+
+# --- Slovenija ---
+# Vir: https://en.wikipedia.org/wiki/Olm
+Človeška ribica iz slovenskih jam lahko živi več kot 100 let in brez hrane preživi do 10 let.
+# Vir: https://en.wikipedia.org/wiki/Lipizzan
+Lipicanci se rodijo temni, beli pa postanejo šele med 6. in 10. letom starosti.
+# Vir: https://en.wikipedia.org/wiki/Carniolan_honey_bee
+Kranjska čebela je druga najbolj razširjena čebelja pasma na svetu.
+# Vir: https://en.wikipedia.org/wiki/Ljubljana_Marshes_Wooden_Wheel
+Najstarejše znano leseno kolo na svetu, staro okoli 5150 let, so našli na Ljubljanskem barju.
+# Vir: https://en.wikipedia.org/wiki/Divje_Babe_flute
+Piščal iz jame Divje babe, stara okoli 50.000 let, je morda najstarejše glasbilo na svetu.
+# Vir: https://sl.wikipedia.org/wiki/Stara_trta
+Najstarejša trta na svetu raste v Mariboru in je stara več kot 400 let.
+# Vir: https://en.wikipedia.org/wiki/Karst
+Mednarodna beseda »kras« za tovrstno pokrajino izhaja iz slovenskega Krasa.
+# Vir: https://en.wikipedia.org/wiki/Planica
+Leta 1936 je Josef Bradl v Planici kot prvi skočil čez 100 metrov.
+# Vir: https://en.wikipedia.org/wiki/Geography_of_Slovenia
+Gozdovi pokrivajo skoraj 60 odstotkov Slovenije.

@@ -98,6 +98,12 @@ html,body{height:100%;background:#000;overflow:hidden}
 .logo{flex:none;height:176px;color:#fff;transition:color 1s ease}
 .logo svg{display:block;height:100%;width:auto;max-width:200px}
 @media (prefers-reduced-motion:reduce){.logo{transition:none}}
+.feat>*{flex-shrink:0}
+/* tighter margins around the news card and the substitutions box */
+.news{padding:24px 36px 14px}
+.dots{margin-top:12px}
+.subs{padding:0 36px 18px}
+.subs-h{margin-bottom:8px}
 .foot>div:nth-child(2){flex:1;min-width:0}
 #fact{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
 .cd{flex:none;padding-left:30px;border-left:2px solid var(--line);text-align:right}
@@ -504,11 +510,17 @@ function showNews(){
 }
 // Let the description fill all free space on the card: as many lines as fit between
 // the text and the "next" list (the template's fixed 5 / 2 line clamp is only the minimum).
+// When the card is short (e.g. many substitutions below), the picture shrinks first
+// (down to 140 px), then the description gives way; the headline is never cut.
 function fitText(){
- const p=feat.querySelector('p'),nx=feat.querySelector('.next');if(!p)return;
+ const p=feat.querySelector('p'),nx=feat.querySelector('.next'),pic=feat.querySelector('.pic');if(!p)return;
+ p.style.display='';if(pic)pic.style.height='';
  const lh=parseFloat(getComputedStyle(p).lineHeight)||40;
- const bottom=feat.clientHeight-parseFloat(getComputedStyle(feat).paddingBottom)-(nx?nx.offsetHeight+20:0);
- p.style.webkitLineClamp=String(Math.max(2,Math.floor((bottom-p.offsetTop)/lh)));
+ const room=()=>feat.clientHeight-parseFloat(getComputedStyle(feat).paddingBottom)-(nx?nx.offsetHeight+20:0)-p.offsetTop;
+ let lines=Math.floor(room()/lh);
+ if(pic&&lines<2){pic.style.height=Math.max(140,pic.offsetHeight-(2-lines)*lh)+'px';lines=Math.floor(room()/lh)}
+ if(lines<1){p.style.display='none';return}
+ p.style.webkitLineClamp=String(lines);
 }
 if(document.fonts)document.fonts.ready.then(fitText); // re-measure once the web fonts are in
 function restartNews(){clearInterval(newsTimer);showNews();newsTimer=setInterval(showNews,10000)}
@@ -616,15 +628,18 @@ function showSubs(){
  cols.innerHTML=`<div class="cls"><div class="cls-h"><b>${esc(c.cls)}</b><span>${c.rows.length} ${nSp(c.rows.length)}</span></div><div>${c.rows.map(rowHTML).join('')}</div></div>`;
  cols.classList.remove('swap');void cols.offsetWidth;cols.classList.add('swap');
  [...chips.children].forEach((el,i)=>{el.classList.remove('on');if(i===ci){void el.offsetWidth;el.classList.add('on');
-  // many classes: keep the active chip inside the (overflow:hidden) chip row
-  const l=el.offsetLeft-chips.offsetLeft;
-  if(l<chips.scrollLeft||l+el.offsetWidth>chips.scrollLeft+chips.clientWidth)chips.scrollLeft=Math.max(0,l-6)}});
+  // many classes: scroll the chip row so the active class sits in the middle,
+  // with its neighbours visible on both sides (at the ends it stops at the edge)
+  const l=el.offsetLeft-chips.offsetLeft,max=chips.scrollWidth-chips.clientWidth;
+  const target=Math.max(0,Math.min(max,l-(chips.clientWidth-el.offsetWidth)/2));
+  const smooth=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+  try{chips.scrollTo({left:target,behavior:smooth?'smooth':'auto'})}catch(e){chips.scrollLeft=target}}});
  ci=(ci+1)%list.length;}
 function renderSubs(){
  const list=todaysSubs(),sig=JSON.stringify(list);
  if(sig===subsSig)return;
  subsSig=sig;
- const maxRows=Math.max(1,...list.map(c=>c.rows.length));cols.style.height=(maxRows*57)+'px';
+ const maxRows=Math.max(1,...list.map(c=>c.rows.length));cols.style.height=Math.max(maxRows*57,76)+'px'; // 76 px min: room for class name + count
  chips.innerHTML=list.map(c=>`<span>${esc(c.cls)}</span>`).join('');
  ci=0;clearInterval(subsTimer);showSubs();subsTimer=setInterval(showSubs,DUR);
 }
