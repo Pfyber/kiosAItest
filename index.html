@@ -67,27 +67,29 @@ html,body{height:100%;background:#000;overflow:hidden}
 .chips span.on{background:var(--navy);color:#fff}
 .chips span.on::after{content:"";position:absolute;left:0;bottom:0;height:4px;background:var(--signal);animation:fill var(--dur) linear forwards}
 @keyframes fill{from{width:0}to{width:100%}}
-.cls{display:grid;grid-template-columns:130px minmax(0,1fr);background:var(--white);border-radius:14px;overflow:hidden}
-.cls-h{background:var(--navy);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px}
-.cls-h b{font-family:var(--cond);font-weight:800;font-size:44px;line-height:1}
-.cls-h span{font-size:18px;opacity:.7}
-.row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;align-items:center;padding:8px 18px}
+/* dense pages: several classes per page, packed newspaper-style into two columns */
+.subs-pg{font-family:var(--cond);font-weight:700;font-size:22px;color:var(--muted);flex:none}
+.subs-pg:empty{display:none}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.cls{display:grid;grid-template-columns:72px minmax(0,1fr);background:var(--white);border-radius:12px;overflow:hidden}
+.cls-h{background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center}
+.cls-h b{font-family:var(--cond);font-weight:800;font-size:30px;line-height:1}
+.row{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;padding:0 14px;height:46px}
 .row+.row{border-top:1px solid var(--line)}
-.h{font-family:var(--cond);font-weight:700;font-size:28px;background:#D7DEE7;color:var(--navy);border-radius:8px;text-align:center;line-height:40px}
-.line{display:flex;align-items:baseline;gap:14px;white-space:nowrap;overflow:hidden}
-.subj{font-weight:700;font-size:27px}
-.who{font-size:23px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.h{font-family:var(--cond);font-weight:700;font-size:25px;background:#D7DEE7;color:var(--navy);border-radius:7px;text-align:center;line-height:34px}
+.line{display:flex;align-items:baseline;gap:8px;white-space:nowrap;overflow:hidden}
+.subj{font-weight:700;font-size:25px;flex:none}
+.who{font-family:var(--cond);font-weight:500;font-size:24px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 .who em{font-style:normal;color:var(--ink);font-weight:600}
-.room{font-family:var(--cond);font-weight:700;font-size:30px;text-align:right}
-.tag{font-size:17px;font-weight:700;border-radius:5px;padding:1px 7px;flex:none;align-self:center}
-.row.off .subj{text-decoration:line-through;text-decoration-thickness:3px;color:var(--muted)}
+.room{font-family:var(--cond);font-weight:700;font-size:27px;text-align:right}
+.tag{font-size:16px;font-weight:700;border-radius:5px;padding:1px 7px;flex:none;align-self:center}
+.row.off .subj{text-decoration:line-through;text-decoration-thickness:2px;color:var(--muted)}
 .row.off .h{background:var(--red);color:#fff}
 .row.off .tag{background:var(--red);color:#fff}
 .row.room-ch .tag{background:var(--signal);color:var(--ink)}
 .row.room-ch .room{color:#B07F00}
 .cols.swap{animation:swap .6s ease}
-.cols>.cls{height:100%}
-
 /* ---------- FOOTER ---------- */
 .foot{background:var(--white);border-top:6px solid var(--navy);display:flex;align-items:center;gap:30px;padding:0 56px}
 .foot .q{flex:none;width:84px;height:84px;border-radius:42px;background:var(--signal);display:grid;place-items:center;font-family:var(--cond);font-weight:800;font-size:56px;color:var(--navy)}
@@ -160,7 +162,7 @@ html,body{height:100%;background:#000;overflow:hidden}
 /* tighter margins around the news card and the substitutions box */
 .news{padding:24px 36px 14px}
 .dots{margin-top:12px}
-.subs{padding:0 36px 18px}
+.subs{padding:0 36px 10px}
 .subs-h{margin-bottom:8px}
 .foot>.fact{flex:1;min-width:0}
 .foot #fact{font-size:25px}
@@ -194,7 +196,7 @@ html,body{height:100%;background:#000;overflow:hidden}
   </section>
 
   <section class="subs">
-    <div class="subs-h"><h1>Nadomeščanja</h1><div class="chips" id="chips"></div></div>
+    <div class="subs-h"><h1>Nadomeščanja</h1><div class="chips" id="chips"></div><span class="subs-pg" id="subsPg"></span></div>
     <div class="cols" id="cols"></div>
   </section>
 
@@ -739,35 +741,67 @@ function parseEasistent(text,day){
 let subs=[],subsFor='',subsSig=null;
 const rowHTML=r=>{
  const tag=r.type==='off'?'<span class="tag">Odpade</span>':r.type==='room'?'<span class="tag">Nova učilnica</span>':'';
- const who=r.type==='sub'?(r.abs?`${esc(r.abs)} <span>→</span> <em>${esc(r.by)}</em>`:`<em>${esc(r.by)}</em>`):r.type==='off'?`${r.abs?esc(r.abs)+', ':''}ura odpade`:'Pouk poteka v drugi učilnici';
+ const who=r.type==='sub'?(r.abs?`${esc(r.abs)} → <em>${esc(r.by)}</em>`:`<em>${esc(r.by)}</em>`):esc(r.type==='off'?r.abs:(r.by||r.abs));
  return `<div class="row ${r.type==='off'?'off':r.type==='room'?'room-ch':''}"><div class="h">${esc(r.h)}.</div>
   <div class="line"><span class="subj">${esc(r.s)}</span>${tag}<span class="who">${who}</span></div><div class="room">${esc(r.room||'')}</div></div>`};
-const DUR=7000;let ci=0,subsTimer;
-const cols=document.getElementById('cols'),chips=document.getElementById('chips');
+// Several classes per page instead of one: 20 classes used to take 20 × 7 s.
+// Rows have a fixed height (.row 46 px, .col gap 8 px), so pages are packed by arithmetic.
+// Up to MAXROWS rows per column: the box takes space from the news card, which shrinks its picture.
+const DUR=5000,RH=46,GAP=8,MAXROWS=Math.max(3,+CONFIG.subsRows||6);
+let pages=[],pi=0,subsTimer;
+const cols=document.getElementById('cols'),chips=document.getElementById('chips'),subsPg=document.getElementById('subsPg');
 chips.style.setProperty('--dur',DUR+'ms');
-const nSp=n=>n===1?'sprememba':n===2?'spremembi':n<5?'spremembe':'sprememb';
 const todaysSubs=()=>subsFor===subsDay()?subs:[]; // never show another day's data
+// Fill column after column (left to right, then the next page). A class that no longer
+// fits moves to the next column; a class longer than a whole column is split over columns.
+function packSubs(list,k,n){
+ const H=k*(RH+GAP),colsOut=[];let col=null,used=0;
+ const next=()=>{col=[];used=0;colsOut.push(col)};
+ next();
+ for(const c of list){
+  let rows=c.rows;
+  while(rows.length){
+   const gap=col.length?GAP:0,free=Math.floor((H-used-gap)/RH);
+   if(free<rows.length&&(rows.length*RH<=H||free<2)&&col.length){next();continue}
+   const take=Math.min(rows.length,Math.max(1,free));
+   col.push({cls:c.cls,rows:rows.slice(0,take)});used+=gap+take*RH;rows=rows.slice(take);
+  }
+ }
+ const out=[];
+ for(let i=0;i<colsOut.length;i+=n)out.push(colsOut.slice(i,i+n));
+ return out;
+}
 function showSubs(){
- const list=todaysSubs();
- if(!list.length){cols.innerHTML='<p style="font-size:30px;color:var(--muted)">Danes ni nadomeščanj.</p>';return}
- ci%=list.length;const c=list[ci];
- cols.innerHTML=`<div class="cls"><div class="cls-h"><b>${esc(c.cls)}</b><span>${c.rows.length} ${nSp(c.rows.length)}</span></div><div>${c.rows.map(rowHTML).join('')}</div></div>`;
+ if(!pages.length){cols.innerHTML='<p style="font-size:30px;color:var(--muted)">Danes ni nadomeščanj.</p>';subsPg.textContent='';return}
+ pi%=pages.length;const pg=pages[pi];
+ cols.innerHTML=pg.map(col=>`<div class="col">${col.map(c=>`<div class="cls"><div class="cls-h"><b>${esc(c.cls)}</b></div><div>${c.rows.map(rowHTML).join('')}</div></div>`).join('')}</div>`).join('');
  cols.classList.remove('swap');void cols.offsetWidth;cols.classList.add('swap');
- [...chips.children].forEach((el,i)=>{el.classList.remove('on');if(i===ci){void el.offsetWidth;el.classList.add('on');
-  // many classes: scroll the chip row so the active class sits in the middle,
-  // with its neighbours visible on both sides (at the ends it stops at the edge)
-  const l=el.offsetLeft-chips.offsetLeft,max=chips.scrollWidth-chips.clientWidth;
-  const target=Math.max(0,Math.min(max,l-(chips.clientWidth-el.offsetWidth)/2));
+ subsPg.textContent=pages.length>1?`${pi+1}/${pages.length}`:'';
+ const onPage=new Set(pg.flat().map(c=>c.cls));let first=null;
+ [...chips.children].forEach(el=>{el.classList.remove('on');if(onPage.has(el.textContent)){void el.offsetWidth;el.classList.add('on');first=first||el}});
+ // many classes: scroll the chip row so the classes on this page start at its left third
+ if(first){
+  const l=first.offsetLeft-chips.offsetLeft,max=chips.scrollWidth-chips.clientWidth;
+  const target=Math.max(0,Math.min(max,l-chips.clientWidth/3));
   const smooth=!matchMedia('(prefers-reduced-motion: reduce)').matches;
-  try{chips.scrollTo({left:target,behavior:smooth?'smooth':'auto'})}catch(e){chips.scrollLeft=target}}});
- ci=(ci+1)%list.length;}
+  try{chips.scrollTo({left:target,behavior:smooth?'smooth':'auto'})}catch(e){chips.scrollLeft=target}}
+ pi=(pi+1)%pages.length;}
 function renderSubs(){
  const list=todaysSubs(),sig=JSON.stringify(list);
  if(sig===subsSig)return;
  subsSig=sig;
- const maxRows=Math.max(1,...list.map(c=>c.rows.length));cols.style.height=Math.max(maxRows*57,76)+'px'; // 76 px min: room for class name + count
+ // Two columns; the lowest box that shows everything on one page, else MAXROWS rows per column and paging.
+ let k=1;pages=[];
+ if(list.length){
+  while(k<MAXROWS&&packSubs(list,k,2).length>1)k++;
+  pages=packSubs(list,k,2);
+ }
+ // box = tallest column on any page (fixed while paging, so the news above does not jump)
+ const colH=col=>col.reduce((h,c,i)=>h+(i?GAP:0)+c.rows.length*RH,0);
+ cols.style.height=list.length?Math.max(...pages.flat().map(colH))+'px':'';
  chips.innerHTML=list.map(c=>`<span>${esc(c.cls)}</span>`).join('');
- ci=0;clearInterval(subsTimer);showSubs();subsTimer=setInterval(showSubs,DUR);
+ pi=0;clearInterval(subsTimer);showSubs();subsTimer=setInterval(showSubs,DUR);
+ fitText(); // the news card above changed height
 }
 async function loadSubs(){
  const day=subsDay();

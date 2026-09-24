@@ -33,6 +33,7 @@ window.CONFIG = {
   generalDays: 2,       // RTV items from today and yesterday only
   afternoonMax: 10,
   subsDate: "",         // "YYYY-MM-DD" = show substitutions for this day instead of today (testing)
+  subsRows: 6,          // substitution rows per column (2 columns per page, 5 s per page); more = fewer pages, smaller news
 
   /* Bell schedule for the "current lesson" line under the date (Mon–Fri).
      1.–7. ura from the school timetable; 8.–17. continue the same pattern
