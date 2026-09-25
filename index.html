@@ -221,7 +221,8 @@ const CONFIG=Object.assign({},window.CONFIG||{});
 for(const [k,v] of new URLSearchParams(location.search)){
  if(!(k in CONFIG)) continue;
  const d=CONFIG[k];
- if(Array.isArray(d)&&typeof d[0]==='object')continue; // e.g. holidays: config.js only
+ if(Array.isArray(d)&&typeof d[0]==='object'&&!/Rss$/.test(k))continue; // e.g. holidays: config.js only
+ // feeds (…Rss) may be overridden with "BADGE|url,BADGE|url" (see feedList)
  if(typeof d==='number'){const n=parseFloat(v);if(!isNaN(n))CONFIG[k]=n}
  else if(Array.isArray(d)){const a=v.split(',').map(s=>s.trim()).filter(Boolean).map(s=>/^[0-9a-f]{3,8}$/i.test(s)?'#'+s:s);if(a.length)CONFIG[k]=a}
  else CONFIG[k]=v;
@@ -521,25 +522,40 @@ function bestImg(n){
  return best||ok[0]||null;
 }
 const FEEDS={school:'schoolRss',afternoon:'afternoonRss',general:'generalRss'};
-const listOf=v=>(Array.isArray(v)?v:String(v||'').split(',')).map(s=>s.trim()).filter(Boolean);
+const listOf=v=>(Array.isArray(v)?v:String(v||'').split(',')).map(s=>String(s).trim()).filter(Boolean);
+/* A feed setting is a list of {url, badge}. A plain URL string also works (no badge),
+   and so does "BADGE|url" (used by URL overrides: ?schoolRss=GIM|https://…). */
+const feedList=v=>(Array.isArray(v)?v:listOf(v)).map(f=>{
+ if(f&&typeof f==='object')return{url:String(f.url||'').trim(),badge:String(f.badge??'')};
+ const s=String(f||'').trim(),i=s.indexOf('|');
+ return i<0?{url:s,badge:''}:{url:s.slice(i+1).trim(),badge:s.slice(0,i).trim()};
+}).filter(f=>f.url);
 const keyOf=n=>n.link||n.title;
 const byDate=(a,b)=>(b.date||0)-(a.date||0);
-const generalByUrl=new Map(); // last good items per RTV feed
+const byUrl={school:new Map(),afternoon:new Map(),general:new Map()}; // last good items per feed URL
+// Every feed of a group is loaded; each item remembers its badge (src) and feed URL.
+// The group is merged in config order without duplicates (an item in two feeds keeps the first badge).
 async function loadFeed(k){
- if(k==='general'){ // several RTV feeds, merged into one pool without duplicates
-  const urls=listOf(CONFIG.generalRss);
-  await Promise.all(urls.map(async u=>{
-   try{const items=parseRSS(await fetchText(u),u);if(items.length){generalByUrl.set(u,items);preload(items)}}
-   catch(e){log('generalRss',u,e)} // keep last good
-  }));
-  const seen=new Set(),all=[];
-  for(const u of urls)for(const n of generalByUrl.get(u)||[])if(!seen.has(keyOf(n))){seen.add(keyOf(n));all.push(n)}
-  feeds.general=all;
-  return;
- }
- const url=CONFIG[FEEDS[k]];if(!url)return;
- try{const items=parseRSS(await fetchText(url),url);if(items.length){feeds[k]=items;preload(items)}}
- catch(e){log(FEEDS[k],e)} // keep last good
+ const list=feedList(CONFIG[FEEDS[k]]);
+ await Promise.all(list.map(async f=>{
+  try{const items=parseRSS(await fetchText(f.url),f.url);
+   if(items.length){items.forEach(n=>{n.src=f.badge;n.feed=f.url});byUrl[k].set(f.url,items);preload(items)}}
+  catch(e){log(FEEDS[k],f.url,e)} // keep last good
+ }));
+ const seen=new Set(),all=[];
+ for(const f of list)for(const n of byUrl[k].get(f.url)||[])if(!seen.has(keyOf(n))){seen.add(keyOf(n));all.push(n)}
+ feeds[k]=all;
+}
+// items grouped by feed, each group newest first and cut to max
+function perFeed(arr,max){
+ const m=new Map();for(const n of arr){if(!m.has(n.feed))m.set(n.feed,[]);m.get(n.feed).push(n)}
+ return [...m.values()].map(g=>g.sort(byDate).slice(0,max));
+}
+// Several school feeds take turns (STŠ, GIM, STŠ, GIM, …), up to schoolMax items each.
+function schoolItems(){
+ const groups=perFeed(feeds.school,CONFIG.schoolMax),out=[];
+ for(let i=0;groups.some(g=>i<g.length);i++)for(const g of groups)if(g[i])out.push(g[i]);
+ return out;
 }
 async function loadFeeds(keys){await Promise.all(keys.map(loadFeed));if(!rtvBatch.length&&feeds.general.length)pickRtvBatch();rebuildNews()}
 
@@ -561,9 +577,10 @@ function rtvPool(){
  return fresh.length?fresh:all.slice(0,CONFIG.generalMax); // never leave RTV empty
 }
 function pickRtvBatch(){
- // batch size = number of school items, so the rotation strictly alternates school/RTV
- const sc=Math.min(feeds.school.length,CONFIG.schoolMax);
- const pool=rtvPool(),n=sc?Math.min(sc,CONFIG.generalMax):CONFIG.generalMax,keys=new Set(pool.map(keyOf));
+ // batch size = number of school items (all schools together), so the rotation strictly
+ // alternates school/RTV; generalMax only applies when there is no school news
+ const sc=schoolItems().length;
+ const pool=rtvPool(),n=sc||CONFIG.generalMax,keys=new Set(pool.map(keyOf));
  rtvShown=new Set([...rtvShown].filter(k=>keys.has(k))); // forget items that dropped out
  let batch=pool.filter(x=>!rtvShown.has(keyOf(x))).slice(0,n);
  if(batch.length<n){ // pool used up: start a new round, top up with the newest
@@ -575,16 +592,18 @@ function pickRtvBatch(){
  rtvBatch=batch;
 }
 function buildNews(){
- const take=(arr,badge,max)=>[...arr].sort(byDate).slice(0,max).map(n=>({...n,img:bestImg(n),src:badge}));
+ const withImg=n=>({...n,img:bestImg(n)});
+ // event feeds: up to afternoonMax items per feed, all merged newest first
+ const ev=arr=>perFeed(arr,CONFIG.afternoonMax).flat().sort(byDate).map(withImg);
  const maxAge=CONFIG.afternoonMaxDays>0?CONFIG.afternoonMaxDays*864e5:Infinity;
- const events=take(feeds.afternoon.filter(n=>n.date&&Date.now()-n.date<=maxAge),CONFIG.afternoonBadge,CONFIG.afternoonMax);
+ const events=ev(feeds.afternoon.filter(n=>n.date&&Date.now()-n.date<=maxAge));
  // Regular news alternate: school, RTV, school, RTV, … (school first). When one feed
  // runs out, the rest of the other follows.
- const sch=take(feeds.school,CONFIG.schoolBadge,CONFIG.schoolMax),gen=take(rtvBatch,CONFIG.generalBadge,CONFIG.generalMax);
+ const sch=schoolItems().map(withImg),gen=[...rtvBatch].sort(byDate).map(withImg);
  const regular=[];
  for(let i=0;i<Math.max(sch.length,gen.length);i++){if(sch[i])regular.push(sch[i]);if(gen[i])regular.push(gen[i])}
  if(forcedMode==='events'){ // manual (logo click): show the event feed even if its items are old
-  const any=events.length?events:take(feeds.afternoon,CONFIG.afternoonBadge,CONFIG.afternoonMax);
+  const any=events.length?events:ev(feeds.afternoon);
   if(any.length)return{mode:'events',list:any};
  }
  if(forcedMode==='regular'&&regular.length)return{mode:'regular',list:regular};
@@ -666,8 +685,8 @@ const subsDay=()=>CONFIG.subsDate||lj().ymd;
 // The public page https://urniki.easistent.com/nadomescanja/<hash> loads its list via XHR
 // from /nadomescanja/<hash>/<YYYY-MM-DD>/seznam  ->  {"status":"ok","data":"<html fragment>"}.
 // The live URL is turned into that endpoint; any other URL (e.g. example.html) is fetched as is.
-function easistentUrl(day){
- const u=CONFIG.easistent;
+// CONFIG.easistent may be one link or a list; all are loaded and merged.
+function easistentUrl(u,day){
  return /\/nadomescanja\/[0-9a-f]{16,}\/?$/i.test(u)?u.replace(/\/?$/,'/')+day+'/seznam':u;
 }
 // "Zupan Kastelec Nina" (eAsistent writes surname first) -> "Zupan Kastelec N."
@@ -803,10 +822,19 @@ function renderSubs(){
  pi=0;clearInterval(subsTimer);showSubs();subsTimer=setInterval(showSubs,DUR);
  fitText(); // the news card above changed height
 }
+const subsByUrl=new Map(); // last good per link: {day, list}
 async function loadSubs(){
- const day=subsDay();
- try{subs=parseEasistent(await fetchText(easistentUrl(day)),day);subsFor=day}
- catch(e){log('easistent',e)} // keep last good (shown only while it is still the same day)
+ const day=subsDay(),urls=listOf(CONFIG.easistent);
+ await Promise.all(urls.map(async u=>{
+  try{subsByUrl.set(u,{day,list:parseEasistent(await fetchText(easistentUrl(u,day)),day)})}
+  catch(e){log('easistent',u,e)} // keep last good (shown only while it is still the same day)
+ }));
+ // merge the links; a class that appears on two of them gets its rows combined
+ const m=new Map();
+ for(const u of urls){const r=subsByUrl.get(u);if(!r||r.day!==day)continue;
+  for(const c of r.list){if(!m.has(c.cls))m.set(c.cls,[]);m.get(c.cls).push(...c.rows)}}
+ subs=[...m].map(([cls,rows])=>({cls,rows:rows.sort((a,b)=>(+a.h||0)-(+b.h||0))})).sort((a,b)=>collator.compare(a.cls,b.cls));
+ subsFor=day;
  renderSubs();
 }
 renderSubs();loadSubs();setInterval(loadSubs,5*60000);

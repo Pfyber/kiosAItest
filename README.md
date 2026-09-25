@@ -72,7 +72,7 @@ Edit `config.js`, or override any value with a URL parameter of the same name:
 
 ```
 index.html?switchHour=13
-index.html?schoolRss=https://sckr.si/gim/?format=feed%26type=rss
+index.html?schoolRss=GIM|https://sckr.si/gim/?format=feed%26type=rss
 index.html?lat=46.36&lon=14.09&place=Bled
 index.html?logoColors=FFFFFF,F5B700,6FA8FF
 ```
@@ -80,15 +80,16 @@ index.html?logoColors=FFFFFF,F5B700,6FA8FF
 - Encode `&` inside a URL value as `%26`.
 - Encode `#` as `%23`, or leave it out for colours (`F5B700` works).
 - Lists such as `logoColors` are comma-separated.
+- Feeds are written `BADGE|url`, several separated by commas.
 
 | Key | Meaning |
 |---|---|
 | `proxy` | Prefix for cross-origin fetches (see above) |
-| `schoolRss` | School news, shown first in the regular news |
-| `afternoonRss` | Event feed, shown alone during event mode |
-| `generalRss` | List of RTV feeds, merged into one pool and alternating with the school news: school, RTV, school, … |
+| `schoolRss` | School feeds, `{ url, badge }` each. Shown first in the regular news; several schools take turns (STŠ, GIM, STŠ, …) |
+| `afternoonRss` | Event feeds, `{ url, badge }` each, merged newest first and shown alone during event mode |
+| `generalRss` | RTV feeds, `{ url, badge }` each, merged into one pool and alternating with the school news: school, RTV, school, … |
 | `generalDays` | RTV items from the last N calendar days only (default 2 = today and yesterday) |
-| `easistent` | Public eAsistent substitutions URL |
+| `easistent` | Public eAsistent substitutions URL, or a list of them; all are merged into one list (a class on two links gets its rows combined) |
 | `switchHour` | Hour (Europe/Ljubljana) when event mode turns on (default 14) |
 | `eventsOffHour` | Hour when event mode turns off the next morning (default 6) |
 | `afternoonMaxDays` | Event items older than this many days are ignored (default 14, `0` = no limit) |
@@ -98,9 +99,8 @@ index.html?logoColors=FFFFFF,F5B700,6FA8FF
 | `logo` | Logo file (default `logo.svg`) |
 | `schoolName` | Text top right above the weather (default `ŠC KRANJ`) |
 | `namedays` | Name-day file for the footer (default `godovi.txt`, `""` = off) |
-| `schoolBadge`, `afternoonBadge`, `generalBadge` | Source labels on the news card (`STŠ`, `IO`, `RTV`) |
-| `schoolMax`, `afternoonMax` | Max. items per feed |
-| `generalMax` | Max. RTV items per pass through the news (each pass shows a new batch) |
+| `schoolMax`, `afternoonMax` | Max. items per feed (per school / per event feed) |
+| `generalMax` | RTV items per pass when there is no school news. Otherwise each pass has one RTV item after every school item (each pass shows a new batch) |
 | `subsDate` | `YYYY-MM-DD`: show substitutions for that day instead of today (testing) |
 | `subsRows` | Substitution rows per column (default 6). Classes are packed into two columns; if they do not fit on one page, pages of 5 s |
 | `themes` | Seasonal themes by date (see below) |

@@ -1,19 +1,28 @@
 /* Info zaslon SCKR – nastavitve.
    Vsako vrednost lahko povoziš s parametrom v URL-ju z enakim imenom, npr.
-   index.html?schoolRss=https://sckr.si/gim/?format=feed%26type=rss&switchHour=13 */
+   index.html?schoolRss=GIM|https://sckr.si/gim/?format=feed%26type=rss&switchHour=13 */
 window.CONFIG = {
   proxy: "https://sckr-proxy.luka-colaric.workers.dev/?url=",            // prefix for cross-origin fetches, e.g. "https://my-proxy/?url=".
                         // Empty = fetch directly (kiosk Chromium with --disable-web-security).
-  schoolRss: "https://sckr.si/sts/?format=feed&type=rss",
-  afternoonRss: "https://sckr.si/iod/?format=feed&type=rss",
-  generalRss: [         // RTV feeds for the regular news (lighter topics), merged
-    "https://img.rtvslo.si/feeds/01.xml",   // Slovenija
-    "https://img.rtvslo.si/feeds/09.xml",   // Znanost in tehnologija
-    "https://img.rtvslo.si/feeds/03.xml",   // Šport
-    "https://img.rtvslo.si/feeds/05.xml",   // Kultura
-    "https://img.rtvslo.si/feeds/06.xml"    // Zabava in slog
+  /* News feeds: any number per list, each with the badge shown on the news card. */
+  schoolRss: [          // school news, one { } per school; order on screen: STŠ, RTV, SG, RTV, STŠ, …
+    { url: "https://sckr.si/sts/?format=feed&type=rss", badge: "STŠ" },
+    { url: "https://sckr.si/sg/?format=feed&type=rss",  badge: "SG" }
   ],
-  easistent: "https://urniki.easistent.com/nadomescanja/df205daa2f7114245e3f4550746c2dec11f80538",
+  afternoonRss: [       // event feeds, shown alone during event mode (merged, newest first)
+    { url: "https://sckr.si/iod/?format=feed&type=rss", badge: "IO" }
+  ],
+  generalRss: [         // RTV feeds for the regular news (lighter topics), merged
+    { url: "https://img.rtvslo.si/feeds/01.xml", badge: "RTV" },   // Slovenija
+    { url: "https://img.rtvslo.si/feeds/09.xml", badge: "RTV" },   // Znanost in tehnologija
+    { url: "https://img.rtvslo.si/feeds/03.xml", badge: "RTV" },   // Šport
+    { url: "https://img.rtvslo.si/feeds/05.xml", badge: "RTV" },   // Kultura
+    { url: "https://img.rtvslo.si/feeds/06.xml", badge: "RTV" }    // Zabava in slog
+  ],
+  easistent: [          // eAsistent substitution links; all are loaded and merged into one list
+    "https://urniki.easistent.com/nadomescanja/df205daa2f7114245e3f4550746c2dec11f80538",
+    "https://urniki.easistent.com/nadomescanja/8b6cec5d1074ed5a5091b7044f639bd5e667494c"
+  ],
   switchHour: 14,       // event mode on: only afternoonRss (if it has current items)
   eventsOffHour: 6,     // event mode off the next morning
   afternoonMaxDays: 14, // event items older than this are ignored (0 = no limit)
@@ -25,11 +34,8 @@ window.CONFIG = {
   logo: "logo.svg",     // SVG file shown in the header
   schoolName: "ŠC KRANJ", // shown top right above the weather
   namedays: "godovi.txt", // today's name days in the footer ("" = off)
-  schoolBadge: "STŠ",   // source badges on the news card
-  afternoonBadge: "IO",
-  generalBadge: "RTV",
   schoolMax: 10,        // max. items per feed
-  generalMax: 10,       // RTV items per pass (a new batch every pass through the news)
+  generalMax: 10,       // RTV items per pass when there is no school news (otherwise one RTV item after each school item)
   generalDays: 2,       // RTV items from today and yesterday only
   afternoonMax: 10,
   subsDate: "",         // "YYYY-MM-DD" = show substitutions for this day instead of today (testing)
