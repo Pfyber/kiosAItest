@@ -73,8 +73,8 @@ html,body{height:100%;background:#000;overflow:hidden}
 .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
 .col{display:flex;flex-direction:column;gap:8px;min-width:0}
 .cls{display:grid;grid-template-columns:72px minmax(0,1fr);background:var(--white);border-radius:12px;overflow:hidden}
-.cls-h{background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center}
-.cls-h b{font-family:var(--cond);font-weight:800;font-size:30px;line-height:1}
+.cls-h{background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;padding:0 5px;min-width:0;overflow:hidden}
+.cls-h b{font-family:var(--cond);font-weight:800;font-size:30px;line-height:1;white-space:nowrap}
 .row{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;padding:0 14px;height:46px}
 .row+.row{border-top:1px solid var(--line)}
 .h{font-family:var(--cond);font-weight:700;font-size:25px;background:#D7DEE7;color:var(--navy);border-radius:7px;text-align:center;line-height:34px}
@@ -794,6 +794,8 @@ function showSubs(){
  if(!pages.length){cols.innerHTML='<p style="font-size:30px;color:var(--muted)">Danes ni nadomeščanj.</p>';subsPg.textContent='';return}
  pi%=pages.length;const pg=pages[pi];
  cols.innerHTML=pg.map(col=>`<div class="col">${col.map(c=>`<div class="cls"><div class="cls-h"><b>${esc(c.cls)}</b></div><div>${c.rows.map(rowHTML).join('')}</div></div>`).join('')}</div>`).join('');
+ // long class names (e.g. "2. ETPTI"): shrink the label until it fits on one line
+ for(const b of cols.querySelectorAll('.cls-h b')){const w=b.parentElement.clientWidth-10;if(b.scrollWidth>w)b.style.fontSize=Math.max(14,Math.floor(30*w/b.scrollWidth))+'px'}
  cols.classList.remove('swap');void cols.offsetWidth;cols.classList.add('swap');
  subsPg.textContent=pages.length>1?`${pi+1}/${pages.length}`:'';
  const onPage=new Set(pg.flat().map(c=>c.cls));let first=null;
