@@ -39,6 +39,7 @@ window.CONFIG = {
   generalMax: 10,       // RTV items per pass when there is no school news (otherwise one RTV item after each school item)
   generalDays: 2,       // RTV items from today and yesterday only
   afternoonMax: 10,
+  qr: true,             // QR code to the article on each news card (false = off)
   subsDate: "",         // "YYYY-MM-DD" = show substitutions for this day instead of today (testing)
   subsRows: 6,          // substitution rows per column (2 columns per page, 5 s per page); more = fewer pages, smaller news
 

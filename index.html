@@ -49,10 +49,15 @@ html,body{height:100%;background:#000;overflow:hidden}
 /* square / portrait pictures: whole picture, centred on a blurred copy of itself (no cut-off heads) */
 .feat .pic.fit::before,.feat .pic.fit::after{content:"";position:absolute;background:inherit}
 .feat .pic.fit::before{inset:-40px;background-size:cover;filter:blur(30px) brightness(.8)}
-.feat .pic.fit::after{inset:0;background-size:contain}
+.feat .pic.fit::after{inset:0;background-size:contain;background-color:transparent}
 .feat.img h2{font-size:64px;margin:18px 0 14px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .feat.img p{-webkit-line-clamp:2;font-size:30px}
-.next{margin-top:auto;border-top:2px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:12px}
+.nfoot{margin-top:auto;border-top:2px solid var(--line);padding-top:20px;display:flex;gap:24px;align-items:center}
+.next{flex:1;min-width:0;display:flex;flex-direction:column;gap:12px}
+/* QR code to the article shown on the card */
+.qr{flex:none;display:flex;align-items:center;gap:12px;color:var(--muted);font-size:20px;line-height:1.15;text-align:right}
+.qr svg{width:124px;height:124px;display:block}
+.src .url{margin-left:auto;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;max-width:60%}
 .next div{display:flex;gap:16px;font-size:26px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .next div b{color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis}
 .feat.swap{animation:swap .6s ease}
@@ -213,6 +218,7 @@ html,body{height:100%;background:#000;overflow:hidden}
 </div>
 
 <script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
 'use strict';
 /* =====================================================================
@@ -664,6 +670,17 @@ function rebuildNews(){
  else{ni=news.length?ni%news.length:0;const cur=(ni-1+news.length)%news.length;
   [...dots.children].forEach((d,i)=>d.classList.toggle('on',i===cur))}
 }
+// Article link without tracking parameters (utm_…), so the QR code stays small.
+function cleanLink(l){try{const u=new URL(l);[...u.searchParams.keys()].filter(k=>/^utm_/i.test(k)).forEach(k=>u.searchParams.delete(k));return /^https?:$/.test(u.protocol)?u.href:''}catch(e){return''}}
+// "iskrice.si/dan-profesorjev" – the address as people would type it
+function shortLink(l){try{const u=new URL(l);let t=u.hostname.replace(/^www\./,'')+u.pathname.replace(/\/$/,'')+u.search;try{t=decodeURI(t)}catch(e){}return t}catch(e){return''}}
+function qrSVG(text){
+ if(!text||typeof qrcode!=='function'||CONFIG.qr===false)return'';
+ try{const q=qrcode(0,'M');q.addData(text);q.make();const n=q.getModuleCount(),m=2;let d='';
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(q.isDark(r,c))d+=`M${c+m} ${r+m}h1v1h-1z`;
+  return `<svg viewBox="0 0 ${n+2*m} ${n+2*m}" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><path d="${d}" fill="#152033"/></svg>`}
+ catch(e){return''}
+}
 function showNews(){
  if(!news.length){ // quiet placeholder until the first feed arrives
   if(!feat.innerHTML){feat.className='feat';feat.innerHTML='<div class="src"><b>SCKR</b></div><h2>Šolski center Kranj</h2><p>Novice se nalagajo …</p>'}
@@ -671,7 +688,8 @@ function showNews(){
  ni%=news.length;const n=news[ni];shownItem=n;
  feat.className='feat'+(n.img?' img':'');
  const nxt=[1,2].slice(0,Math.max(0,news.length-1)).map(k=>news[(ni+k)%news.length]);
- feat.innerHTML=`${n.img?`<div class="pic"></div>`:''}<div class="src"><b>${esc(n.src)}</b>${when(n.date)}</div><h2>${esc(n.title)}</h2><p>${esc(n.text)}</p><div class="next">${nxt.map(x=>`<div>${when(x.date)}<b>${esc(x.title)}</b></div>`).join('')}</div><div class="bar" id="bar"></div>`;
+ const link=cleanLink(n.link),qr=qrSVG(link);
+ feat.innerHTML=`${n.img?`<div class="pic"></div>`:''}<div class="src"><b>${esc(n.src)}</b>${when(n.date)}${link?`<span class="url">${esc(shortLink(link))}</span>`:''}</div><h2>${esc(n.title)}</h2><p>${esc(n.text)}</p><div class="nfoot"><div class="next">${nxt.map(x=>`<div>${when(x.date)}<b>${esc(x.title)}</b></div>`).join('')}</div>${qr?`<div class="qr"><span>Preberi<br>več</span>${qr}</div>`:''}</div><div class="bar" id="bar"></div>`;
  if(n.img)setPic(feat.querySelector('.pic'),n.img);
  fitText();
  void feat.offsetWidth;feat.classList.add('swap');
@@ -685,7 +703,7 @@ function showNews(){
 // When the card is short (e.g. many substitutions below), the picture shrinks first
 // (down to 140 px), then the description gives way; the headline is never cut.
 function fitText(){
- const p=feat.querySelector('p'),nx=feat.querySelector('.next'),pic=feat.querySelector('.pic');if(!p)return;
+ const p=feat.querySelector('p'),nx=feat.querySelector('.nfoot'),pic=feat.querySelector('.pic');if(!p)return;
  p.style.display='';if(pic)pic.style.height='';
  const lh=parseFloat(getComputedStyle(p).lineHeight)||40;
  const room=()=>feat.clientHeight-parseFloat(getComputedStyle(feat).paddingBottom)-(nx?nx.offsetHeight+20:0)-p.offsetTop;

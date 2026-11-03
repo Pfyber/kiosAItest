@@ -103,6 +103,7 @@ index.html?logoColors=FFFFFF,F5B700,6FA8FF
 | `generalMax` | RTV items per pass when there is no school news. Otherwise each pass has one RTV item after every school item (each pass shows a new batch) |
 | `subsDate` | `YYYY-MM-DD`: show substitutions for that day instead of today (testing) |
 | `subsRows` | Substitution rows per column (default 6). Classes are packed into two columns; if they do not fit on one page, pages of 5 s |
+| `qr` | QR code to the article in the bottom-right corner of each news card, plus its short address next to the date (default `true`; `false` = off) |
 | `themes` | Seasonal themes by date (see below) |
 | `theme` | Force a theme (e.g. `christmas`) or `off`; empty = by date |
 
