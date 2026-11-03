@@ -59,7 +59,7 @@ Yodeck shows the page in a normal browser, so option 2 (a proxy) is needed.
 4. **Yodeck.** Add a new "Web Page" app with the GitHub Pages URL, and put it in the
    playlist of the portrait screen.
 
-The worker only forwards to `sckr.si`, `img.rtvslo.si` and `urniki.easistent.com`. To add
+The worker only forwards to `sckr.si`, `img.rtvslo.si`, `urniki.easistent.com`, `plus.cobiss.net` and `iskrice.si`. To add
 another site, add it to `ALLOWED_HOSTS` in the worker. One screen makes roughly 2,100
 requests a day, well within the free plan of 100,000.
 

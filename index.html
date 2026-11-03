@@ -45,7 +45,11 @@ html,body{height:100%;background:#000;overflow:hidden}
 .feat h2{font-family:var(--cond);font-weight:700;font-size:80px;line-height:1;margin:26px 0 22px;letter-spacing:-.5px}
 .feat p{font-size:34px;line-height:1.4;color:#3A475B;max-width:26em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
 .feat.img{padding-top:0}
-.feat .pic{margin:0 -40px 26px;height:330px;background:#C9D4E3 center/cover no-repeat;flex:none}
+.feat .pic{margin:0 -40px 26px;height:330px;background:#C9D4E3 center/cover no-repeat;flex:none;position:relative;overflow:hidden}
+/* square / portrait pictures: whole picture, centred on a blurred copy of itself (no cut-off heads) */
+.feat .pic.fit::before,.feat .pic.fit::after{content:"";position:absolute;background:inherit}
+.feat .pic.fit::before{inset:-40px;background-size:cover;filter:blur(30px) brightness(.8)}
+.feat .pic.fit::after{inset:0;background-size:contain}
 .feat.img h2{font-size:64px;margin:18px 0 14px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .feat.img p{-webkit-line-clamp:2;font-size:30px}
 .next{margin-top:auto;border-top:2px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:12px}
@@ -476,15 +480,24 @@ function parseRSS(xmlText,base){
   const get=n=>it.getElementsByTagName(n)[0];
   // Joomla: description is HTML (CDATA). First <img> that is not a file-type icon.
   const html=new DOMParser().parseFromString(get('description')?.textContent||'','text/html');
+  // WordPress (e.g. iskrice.si): pictures are only in <content:encoded>, the description is a plain excerpt
+  const full=(it.getElementsByTagNameNS('http://purl.org/rss/1.0/modules/content/','encoded')[0]||get('content:encoded'))?.textContent||'';
+  const fullHtml=full?new DOMParser().parseFromString(full,'text/html'):null;
   // All <img> in the description except file-type icons; the largest one is chosen once loaded.
   // Joomla often shows a small thumbnail (name ending in -m / _m) wrapped in a link to the
   // full-size picture; the linked original and the name without -m/_m are tried first.
   const isImg=u=>/\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(u||'');
-  const imgs=[...new Set([...html.querySelectorAll('img')].filter(i=>!i.classList.contains('wf_file_icon')).flatMap(i=>{
-   const src=i.getAttribute('src')||'',href=i.closest('a')?.getAttribute('href')||'',c=[];
+  // WordPress: skip emoji images; take the largest srcset size (the src is often a 150x150 thumbnail).
+  const isEmoji=i=>i.classList.contains('wp-smiley')||i.classList.contains('emoji')||/\/images\/core\/emoji\//.test(i.getAttribute('src')||'');
+  const biggest=ss=>{let u='',w=0;for(const part of String(ss||'').split(/,\s+/)){const [a,d]=part.trim().split(/\s+/);const n=parseFloat(d)||0;if(a&&n>w){w=n;u=a}}return u};
+  const imgEls=[...html.querySelectorAll('img'),...(fullHtml?fullHtml.querySelectorAll('img'):[])];
+  const imgs=[...new Set(imgEls.filter(i=>!i.classList.contains('wf_file_icon')&&!isEmoji(i)).flatMap(i=>{
+   const src=i.getAttribute('data-src')||i.getAttribute('src')||'',href=i.closest('a')?.getAttribute('href')||'',c=[];
+   if(/^data:image\//i.test(src))return [src]; // picture pasted straight into the post
    if(isImg(href))c.push(href);
    else{const full=src.replace(/[-_]m(\.(?:jpe?g|png|webp|gif))(\?.*)?$/i,'$1$2');if(full!==src)c.push(full)}
-   c.push(src);return c.map(u=>absUrl(u,base));
+   const big=biggest(i.getAttribute('data-srcset')||i.getAttribute('srcset'));if(big)c.push(big);
+   c.push(src);return c.map(u=>/^data:/.test(u)?u:absUrl(u,base));
   }).filter(Boolean))];
   if(!imgs.length){ // RTV & co.: <enclosure>, <media:content>, <media:thumbnail>
    const enc=[...it.getElementsByTagName('enclosure')].find(e=>(e.getAttribute('type')||'').startsWith('image/')||/\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(e.getAttribute('url')||''));
@@ -492,9 +505,16 @@ function parseRSS(xmlText,base){
   }
   html.querySelectorAll('br').forEach(b=>b.replaceWith(' '));
   html.querySelectorAll('p,div,li,h1,h2,h3,h4,h5,h6,td,tr,blockquote').forEach(e=>e.append(' '));
+  let text=clean(html.body?html.body.textContent:'');
+  if(!text&&fullHtml){ // empty excerpt: use the post itself
+   fullHtml.querySelectorAll('br').forEach(b=>b.replaceWith(' '));
+   fullHtml.querySelectorAll('p,div,li,h1,h2,h3,h4,h5,h6,td,tr,blockquote').forEach(e=>e.append(' '));
+   text=clean(fullHtml.body?.textContent);
+  }
+  text=text.replace(/\s*\[(?:…|\.\.\.)\]$/,' …'); // WordPress excerpt ends in "[…]"
   const d=new Date(get('pubDate')?.textContent||'');
   return {title:clean(get('title')?.textContent),link:clean(get('link')?.textContent),date:isNaN(d)?null:d,
-   text:clip(clean(html.body?html.body.textContent:''),1500),img:imgs[0]||null,imgs};
+   text:clip(text,1500),img:imgs[0]||null,imgs};
  }).filter(n=>n.title);
 }
 function when(d){if(!d)return'';d=new Date(d);const t=new Date();t.setHours(0,0,0,0);
@@ -504,9 +524,14 @@ function when(d){if(!d)return'';d=new Date(d);const t=new Date();t.setHours(0,0,
 const feeds={school:[],afternoon:[],general:[]}; // last good items per feed
 const badImg=new Set(),seenImg=new Set();
 const imgArea=new Map(); // image URL -> width×height in pixels, known once loaded
+const imgRatio=new Map(); // image URL -> width / height, known once loaded
+// Show a picture on the card. Wide ones fill the strip (cover); square and portrait ones
+// (width < 1.2 × height) are shown whole on a blurred copy, so they are not cut to a thin band.
+function setPic(pic,u){pic.style.backgroundImage=`url(${JSON.stringify(u)})`;pic.classList.toggle('fit',(imgRatio.get(u)||9)<1.2)}
 function preload(items){items.forEach(n=>{for(const u of n.imgs||[]){
  if(seenImg.has(u))continue;seenImg.add(u);const im=new Image();
- im.onload=()=>{imgArea.set(u,im.naturalWidth*im.naturalHeight);if(n.imgs.length>1){rebuildNews();upgradeShownPic()}};
+ im.onload=()=>{imgArea.set(u,im.naturalWidth*im.naturalHeight);imgRatio.set(u,im.naturalWidth/(im.naturalHeight||1));
+  if(n.imgs.length>1)rebuildNews();upgradeShownPic()};
  im.onerror=()=>{badImg.add(u);rebuildNews()};im.src=u}})}
 // Several images in one post: use the largest (most pixels) that loaded; until they
 // have loaded, the first one that isn't broken.
@@ -514,7 +539,7 @@ function preload(items){items.forEach(n=>{for(const u of n.imgs||[]){
 let shownItem=null;
 function upgradeShownPic(){
  const n=shownItem,pic=feat.querySelector('.pic');if(!n||!pic)return;
- const b=bestImg(n);if(b&&b!==n.img){n.img=b;pic.style.backgroundImage=`url(${JSON.stringify(b)})`}
+ const b=bestImg(n);if(b){n.img=b;setPic(pic,b)}
 }
 function bestImg(n){
  const ok=(n.imgs||[]).filter(u=>!badImg.has(u));
@@ -647,7 +672,7 @@ function showNews(){
  feat.className='feat'+(n.img?' img':'');
  const nxt=[1,2].slice(0,Math.max(0,news.length-1)).map(k=>news[(ni+k)%news.length]);
  feat.innerHTML=`${n.img?`<div class="pic"></div>`:''}<div class="src"><b>${esc(n.src)}</b>${when(n.date)}</div><h2>${esc(n.title)}</h2><p>${esc(n.text)}</p><div class="next">${nxt.map(x=>`<div>${when(x.date)}<b>${esc(x.title)}</b></div>`).join('')}</div><div class="bar" id="bar"></div>`;
- if(n.img)feat.querySelector('.pic').style.backgroundImage=`url(${JSON.stringify(n.img)})`;
+ if(n.img)setPic(feat.querySelector('.pic'),n.img);
  fitText();
  void feat.offsetWidth;feat.classList.add('swap');
  [...dots.children].forEach((d,i)=>d.classList.toggle('on',i===ni));

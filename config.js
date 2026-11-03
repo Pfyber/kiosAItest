@@ -7,7 +7,8 @@ window.CONFIG = {
   /* News feeds: any number per list, each with the badge shown on the news card. */
   schoolRss: [          // school news, one { } per school; order on screen: STŠ, RTV, SG, RTV, STŠ, …
     { url: "https://sckr.si/sts/?format=feed&type=rss", badge: "STŠ" },
-    { url: "https://sckr.si/sg/?format=feed&type=rss",  badge: "SG" }
+    { url: "https://sckr.si/sg/?format=feed&type=rss",  badge: "SG" },
+    { url: "https://iskrice.si/feed/",                  badge: "Iskrice" }
   ],
   afternoonRss: [       // event feeds, shown alone during event mode (merged, newest first)
     { url: "https://sckr.si/iod/?format=feed&type=rss", badge: "IO" }
